@@ -1,0 +1,7 @@
+micronaut:
+  application:
+    name: micronaut-kotlin-demo
+  io:
+    watch:
+      paths: src/main
+      restart: true

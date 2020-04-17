@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: com.albertattard.presentation
+---
+testFramework: kotlintest
+sourceLanguage: kotlin
