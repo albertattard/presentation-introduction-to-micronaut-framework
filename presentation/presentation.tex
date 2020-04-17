@@ -6,6 +6,7 @@
 \usepackage{setspace}
 \usepackage{color}
 \usepackage{listings}
+\usepackage{pgf-pie}
 
 \usetheme[progressbar=frametitle]{metropolis}
 \setbeamertemplate{frame numbering}[fraction]
@@ -22,28 +23,41 @@
 \date{}
 
 \begin{document}
-\metroset{block=fill}
+  \metroset{block=fill}
 
-    \begin{frame}
-        \titlepage
-    \end{frame}
+  \begin{frame}
+    \titlepage
+  \end{frame}
 
+  \begin{frame}[t]{Micronaut}
+    \textbf{What is Micronaut?}\\[6pt]
+    Micronaut is a framework based on the JVM that enables fast development of low memory footprint application.
 
-    \begin{frame}[t]{Title Introduction}
-        Hello 1
-    \end{frame}
+    This makes it a good candidate for building microservices and serverless applications.
+  \end{frame}
 
-    \begin{frame}[t]{using Blocks}
-        \begin{block}{Micronaut}
-        \textbf{Micronaut} is a modern, JVM-based, full-stack framework for building modular, easily testable microservice and serverless applications
-        \end{block}
-    \end{frame}
+  \begin{frame}[t]{Another Framework?}
+    \textbf{Spring Boot} dominates the market, according to \href{https://www.jrebel.com/sites/rebel/files/pdfs/ebook-jrebel-java-productivity-report.pdf}{JRebel's 2020 Java Developer Productivity Report}
 
-    \begin{frame}[t,fragile]{Code Example}
-        Example
-        \begin{lstlisting}[language=Java]
+    \begin{tikzpicture}
+      \pie [rotate = 0, color={green!5, green!10}]
+      {82.70/Spring Boot,
+      17.3/Others}
+    \end{tikzpicture}
+
+  \end{frame}
+
+  \begin{frame}[t]{using Blocks}
+    \begin{block}{Micronaut}
+      \textbf{Micronaut} is a modern, JVM-based, full-stack framework for building modular, easily testable microservice and serverless applications
+    \end{block}
+  \end{frame}
+
+  \begin{frame}[t,fragile]{Code Example}
+    Example
+    \begin{lstlisting}[language=Java]
 // this is a simple code listing
 println("hello kotlin from latex")
-        \end{lstlisting}
-    \end{frame}
+    \end{lstlisting}
+  \end{frame}
 \end{document}

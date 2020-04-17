@@ -16,3 +16,6 @@ $ brew cask install texmaker
     \definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}
     \usecolortheme[named=applegreen]{structure}
     ```
+1. Charts [http://latex-cookbook.net/articles/pie-chart/](http://latex-cookbook.net/articles/pie-chart/)
+
+    Package: [https://ctan.org/pkg/pgf-pie](https://ctan.org/pkg/pgf-pie)
