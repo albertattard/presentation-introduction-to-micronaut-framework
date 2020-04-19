@@ -1,5 +1,16 @@
 # Introduction to Micronaut Framework
 
+## Java version
+
+```bash
+$ java -version
+```
+
+```bash
+openjdk version "11.0.6" 2020-01-14
+OpenJDK Runtime Environment AdoptOpenJDK (build 11.0.6+10)
+OpenJDK 64-Bit Server VM AdoptOpenJDK (build 11.0.6+10, mixed mode)
+```
 
 ## Run Tests
 
@@ -13,18 +24,7 @@ $ ./gradlew clean ktlintFormat dependencyUpdates test
 $ ./gradlew clean build
 ```
 
-## Test Application
-
-Java version
-
-```bash
-$ java -version
-openjdk version "11.0.6" 2020-01-14
-OpenJDK Runtime Environment AdoptOpenJDK (build 11.0.6+10)
-OpenJDK 64-Bit Server VM AdoptOpenJDK (build 11.0.6+10, mixed mode)
-```
-
-Tests
+## Time to First Response
 
 1. Micronaut
 
@@ -40,10 +40,34 @@ Tests
 
 Comparing time to first response
 
-|#|Micronaut|String Boot|
-|-|--------:|----------:|
-|1|     1713|       3944|
-|2|     1723|       3452|
-|3|     1797|       3501|
-|4|     1739|   **3256**|
-|5| **1666**|       3312|
+| # | Micronaut | String Boot |
+|:-:|----------:|------------:|
+| 1 |      1713 |        3944 |
+| 2 |      1723 |        3452 |
+| 3 |      1797 |        3501 |
+| 4 |      1739 |    **3256** |
+| 5 |  **1666** |        3312 |
+
+# Memory Footprint
+
+1. Micronaut
+
+    ```bash
+    $ java -jar micronaut-kotlin-demo/build/libs/micronaut-kotlin-demo-1.0-all.jar
+    ```
+
+1. Spring Boot
+
+    ```bash
+    $ java -jar boot-kotlin-demo/build/libs/boot-kotlin-demo-1.0.0.jar
+    ```
+
+Comparing time to first response
+
+| # | Micronaut | String Boot |
+|:-:|----------:|------------:|
+| 1 |     116.5 |       352.5 |
+| 2 |     118.5 |   **337.7** |
+| 3 |     117.4 |       339.2 |
+| 4 |     116.7 |       339.1 |
+| 5 | **115.2** |       343.6 |
