@@ -7,5 +7,5 @@ import java.util.UUID
 data class Contact(
     val id: UUID,
     val name: String,
-    val options: List<ContactOption>
+    val email: String
 )

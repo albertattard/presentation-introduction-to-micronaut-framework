@@ -4,6 +4,6 @@ import io.micronaut.core.annotation.Introspected
 
 @Introspected
 data class CreateContact(
-    val name:String,
-    val options: List<ContactOption>
+    val name: String,
+    val email: String
 )

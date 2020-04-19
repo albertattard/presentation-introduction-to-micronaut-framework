@@ -59,11 +59,11 @@ allOpen {
 
 dependencies {
     val kotlin = "1.3.72"
-    val micronaut = "1.3.2"
+    val micronaut = "2.0.0.M2"
     val jna = "5.5.0"
     val directoryWatcher = "0.9.9"
-    val jacksonModuleKotlin = "2.10.2"
-    val logbackClassic = "1.2.3"
+    val jacksonModuleKotlin = "2.11.0.rc1"
+    val logbackClassic = "1.3.0-alpha5"
     val mockk = "1.9.3"
     val kotlintest = "1.1.5"
     val kotlintestRunner = "3.4.0"

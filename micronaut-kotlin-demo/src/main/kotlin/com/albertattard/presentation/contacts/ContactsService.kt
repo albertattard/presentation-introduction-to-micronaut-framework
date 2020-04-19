@@ -8,5 +8,5 @@ interface ContactsService {
 
     fun findById(id: UUID): Contact?
 
-    fun list() : List<Contact>
+    fun list(): List<Contact>
 }
