@@ -1,11 +1,13 @@
 package com.albertattard.presentation.contacts
 
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 import javax.inject.Singleton
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 
 @Singleton
 class DatabaseContactsService(
@@ -24,16 +26,20 @@ class DatabaseContactsService(
         transaction(database) {
             ContactsTable.select { ContactsTable.id eq id }
                 .singleOrNull()
-                ?.let { record ->
-                    Contact(
-                        id = record[ContactsTable.id].value,
-                        name = record[ContactsTable.name],
-                        email = record[ContactsTable.email]
-                    )
-                }
+                ?.let { toContact(it) }
         }
 
-    override fun list(): List<Contact> {
-        TODO("Remember to write a test first!!")
-    }
+    override fun list(): List<Contact> =
+        transaction(database) {
+            ContactsTable
+                .selectAll()
+                .map { toContact(it) }
+        }
+
+    private fun toContact(row: ResultRow): Contact =
+        Contact(
+            id = row[ContactsTable.id].value,
+            name = row[ContactsTable.name],
+            email = row[ContactsTable.email]
+        )
 }

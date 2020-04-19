@@ -7,8 +7,8 @@ import com.albertattard.presentation.contacts.DatabaseHelper.withContact
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.micronaut.test.annotation.MicronautTest
-import org.jetbrains.exposed.sql.Database
 import java.util.UUID
+import org.jetbrains.exposed.sql.Database
 
 @MicronautTest
 class DatabaseContactsServiceTest(
