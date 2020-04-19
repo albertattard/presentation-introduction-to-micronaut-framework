@@ -13,4 +13,8 @@ class DefaultContactsService : ContactsService {
     override fun findById(id: UUID): Contact? {
         TODO("Remember to write a test first!!")
     }
+
+    override fun list(): List<Contact> {
+        TODO("Remember to write a test first!!")
+    }
 }

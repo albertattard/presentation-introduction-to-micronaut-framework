@@ -3,6 +3,7 @@ package com.albertattard.presentation.contacts
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
+import io.micronaut.core.type.Argument
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
@@ -63,6 +64,46 @@ class ContactsControllerTest(
         exception.status.code shouldBe 404
 
         verify(exactly = 1) { mock.findById(id) }
+
+        /* TODO: check why this needs to be verified */
+        verify(exactly = 2) { mock.hashCode() }
+        verify(exactly = 1) { mock.toString() }
+        confirmVerified(mock)
+    }
+
+    "should return the contact when found" {
+        val mock = getMock(service)
+
+        val id = UUID.randomUUID()
+        val contact = Contact(
+            id = id,
+            name = "Albert Attard",
+            options = listOf(ContactOption(Type.EMAIL, "albertattard@gmail.com"))
+        )
+
+        every { mock.findById(id) } returns contact
+
+        val response = client.toBlocking().retrieve(HttpRequest.GET<Any>("/$id"), Contact::class.java)
+        response shouldBe contact
+
+        verify(exactly = 1) { mock.findById(id) }
+
+        /* TODO: check why this needs to be verified */
+        verify(exactly = 2) { mock.hashCode() }
+        verify(exactly = 1) { mock.toString() }
+        confirmVerified(mock)
+    }
+
+    "should return an empty list when no contacts are available" {
+        val mock = getMock(service)
+
+        every { mock.list() } returns emptyList()
+
+        val response = client.toBlocking()
+            .retrieve(HttpRequest.GET<Any>("/"), Argument.of(MutableList::class.java, Contact::class.java))
+        response shouldBe emptyList<Contact>()
+
+        verify(exactly = 1) { mock.list() }
 
         /* TODO: check why this needs to be verified */
         verify(exactly = 2) { mock.hashCode() }

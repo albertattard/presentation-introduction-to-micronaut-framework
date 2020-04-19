@@ -7,4 +7,6 @@ interface ContactsService {
     fun create(contact: CreateContact): CreatedContact
 
     fun findById(id: UUID): Contact?
+
+    fun list() : List<Contact>
 }

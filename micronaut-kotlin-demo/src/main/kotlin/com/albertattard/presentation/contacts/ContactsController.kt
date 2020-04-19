@@ -13,6 +13,10 @@ class ContactsController internal constructor(
     private var service: ContactsService
 ) {
 
+    @Get("/", produces = [MediaType.APPLICATION_JSON])
+    fun list(): List<Contact> =
+        service.list()
+
     @Post("/", produces = [MediaType.APPLICATION_JSON])
     fun create(create: CreateContact): HttpResponse<Void> =
         service.create(create)
