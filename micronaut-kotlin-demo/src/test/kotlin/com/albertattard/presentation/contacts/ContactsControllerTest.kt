@@ -34,7 +34,7 @@ class ContactsControllerTest(
                     "albertattard@gmail.com"
                 )
             )
-        );
+        )
 
         val created =
             CreatedContact(UUID.randomUUID())
@@ -94,14 +94,21 @@ class ContactsControllerTest(
         confirmVerified(mock)
     }
 
-    "should return an empty list when no contacts are available" {
+    "should return the list of contacts" {
         val mock = getMock(service)
 
-        every { mock.list() } returns emptyList()
+        val contacts = listOf(
+            Contact(
+                id = UUID.randomUUID(),
+                name = "Albert Attard",
+                options = listOf(ContactOption(Type.EMAIL, "albertattard@gmail.com"))
+            )
+        )
+        every { mock.list() } returns contacts
 
         val response = client.toBlocking()
             .retrieve(HttpRequest.GET<Any>("/"), Argument.of(MutableList::class.java, Contact::class.java))
-        response shouldBe emptyList<Contact>()
+        response shouldBe contacts
 
         verify(exactly = 1) { mock.list() }
 
