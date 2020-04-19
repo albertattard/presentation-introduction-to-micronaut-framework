@@ -12,10 +12,9 @@ plugins {
     id("com.github.ben-manes.versions").version("0.28.0")
 }
 
-val developmentOnly: Configuration by configurations.creating
-
 tasks {
     withType<KotlinCompile> {
+        kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
         kotlinOptions.jvmTarget = "11"
         kotlinOptions.javaParameters = true
     }
@@ -39,6 +38,8 @@ application {
 allOpen {
     annotation("io.micronaut.aop.Around")
 }
+
+val developmentOnly: Configuration by configurations.creating
 
 dependencies {
     val kotlin = "1.3.72"
