@@ -50,4 +50,15 @@ class ContactsDatabaseServiceTest(
             found shouldBe contact
         }
     }
+
+    "should return the contacts" {
+        runAndRollback(database) {
+            emptyDatabase()
+
+            val contact = createContact(CreateContact(name = "Albert Attard", email = "albertattard@gmail.com"))
+
+            val found = service.list()
+            found shouldBe listOf(contact)
+        }
+    }
 })
