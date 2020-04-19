@@ -1,12 +1,14 @@
 package com.albertattard.presentation.contacts
 
 import io.kotlintest.shouldBe
+import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.RxHttpClient
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.test.annotation.MicronautTest
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.kotlintest.MicronautKotlinTestExtension.getMock
@@ -42,6 +44,25 @@ class ContactsControllerTest(
         response.headers[HttpHeaders.LOCATION] shouldBe "/contacts/${created.id}"
 
         verify(exactly = 1) { mock.create(create) }
+
+        /* TODO: check why this needs to be verified */
+        verify(exactly = 2) { mock.hashCode() }
+        verify(exactly = 1) { mock.toString() }
+        confirmVerified(mock)
+    }
+
+    "should return not found if contact is not found" {
+        val mock = getMock(service)
+
+        val id = UUID.randomUUID()
+        every { mock.findById(id) } returns null
+
+        val exception = shouldThrow<HttpClientResponseException> {
+            client.toBlocking().retrieve(HttpRequest.GET<Any>("/$id"))
+        }
+        exception.status.code shouldBe 404
+
+        verify(exactly = 1) { mock.findById(id) }
 
         /* TODO: check why this needs to be verified */
         verify(exactly = 2) { mock.hashCode() }
