@@ -37,4 +37,4 @@ subprojects {
     version = "1.0"
 }
 
-defaultTasks("clean", "ktlintFormat", "dependencyUpdates", "test", "build")
+defaultTasks("clean", "ktlintFormat", "dependencyUpdates", "test")

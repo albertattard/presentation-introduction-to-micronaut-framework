@@ -41,12 +41,10 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin")
 
-    implementation("org.apache.httpcomponents:fluent-hc:$httpClient")
+    implementation("org.apache.httpcomponents:httpclient:$httpClient")
 
     /* Logging */
     implementation("org.slf4j:slf4j-api:$slf4j")
     runtimeOnly("ch.qos.logback:logback-classic:$logbackClassic")
     runtimeOnly("org.fusesource.jansi:jansi:$jansi")
 }
-
-defaultTasks("clean", "ktlintFormat", "dependencyUpdates", "test")

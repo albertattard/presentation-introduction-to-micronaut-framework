@@ -5,7 +5,10 @@ import java.net.ConnectException
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
-import org.apache.http.client.fluent.Request
+import org.apache.http.HttpEntity
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.util.EntityUtils
 import org.slf4j.LoggerFactory
 
 object Application {
@@ -30,25 +33,34 @@ object Application {
             .command("java", "-jar", application)
             .start()
 
-        val timeToFirstResponse = measureTimeMillis {
-            loop@ for (i in 1..25) {
-                try {
-                    LOGGER.debug("Checking")
+        val httpClient = HttpClients.createDefault()
+        httpClient.use {
+            val request = HttpGet("http://localhost:8080/contacts/")
 
-                    val response = Request.Get("http://localhost:8080/contacts/")
-                        .execute()
-                        .returnContent()
+            val timeToFirstResponse = measureTimeMillis {
+                loop@ for (i in 1..500) {
+                    try {
+                        LOGGER.debug("Checking")
 
-                    LOGGER.debug("Response {}", response)
-                    break@loop
-                } catch (e: ConnectException) {
-                    LOGGER.warn("Failed to connect")
+                        val response = httpClient.execute(request)
+                        response.use {
+                            val entity: HttpEntity? = response.entity
+                            if (entity != null) {
+                                val result = EntityUtils.toString(entity)
+                                LOGGER.debug("Response {}", result)
+                            }
+                        }
+
+                        break@loop
+                    } catch (e: ConnectException) {
+                        LOGGER.warn("Failed to connect")
+                    }
+
+                    TimeUnit.MILLISECONDS.sleep(10)
                 }
-
-                TimeUnit.MILLISECONDS.sleep(50)
             }
+            LOGGER.debug("Application took {} milliseconds to reply ({})", timeToFirstResponse, application)
         }
-        LOGGER.debug("Application took {} milliseconds to reply ({})", timeToFirstResponse, application)
 
         LOGGER.debug("Stopping the application")
         process.destroy()
