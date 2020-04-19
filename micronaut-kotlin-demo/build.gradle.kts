@@ -65,6 +65,7 @@ dependencies {
     val directoryWatcher = "0.9.9"
     val jacksonModuleKotlin = "2.11.0.rc1"
     val logbackClassic = "1.3.0-alpha5"
+    val jansi = 1.18
     val hikari = "3.4.2"
     val exposed = "0.17.7"
     val h2 = "1.4.200"
@@ -82,7 +83,7 @@ dependencies {
 
     /* Logging */
     runtimeOnly("ch.qos.logback:logback-classic:$logbackClassic")
-    runtimeOnly("org.fusesource.jansi:jansi:1.18")
+    runtimeOnly("org.fusesource.jansi:jansi:$jansi")
 
     /* Micronaut Compiler Magic */
     kapt(platform("io.micronaut:micronaut-bom:$micronaut"))
