@@ -2,14 +2,10 @@ package com.albertattard.presentation
 
 import java.io.File
 import java.net.ConnectException
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.net.http.HttpResponse.BodyHandlers
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
+import org.apache.http.client.fluent.Request
 import org.slf4j.LoggerFactory
 
 object Application {
@@ -34,17 +30,16 @@ object Application {
             .command("java", "-jar", application)
             .start()
 
-        val client: HttpClient = HttpClient.newHttpClient()
-        val request: HttpRequest = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/contacts/"))
-            .build()
-
         val timeToFirstResponse = measureTimeMillis {
             loop@ for (i in 1..25) {
                 try {
                     LOGGER.debug("Checking")
-                    val response: HttpResponse<String> = client.send(request, BodyHandlers.ofString())
-                    LOGGER.debug("Response {}", response.body())
+
+                    val response = Request.Get("http://localhost:8080/contacts/")
+                        .execute()
+                        .returnContent()
+
+                    LOGGER.debug("Response {}", response)
                     break@loop
                 } catch (e: ConnectException) {
                     LOGGER.warn("Failed to connect")

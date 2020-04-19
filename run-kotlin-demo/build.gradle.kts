@@ -34,11 +34,14 @@ application {
 
 dependencies {
     val kotlin = "1.3.72"
+    val httpClient = "4.5.12"
     val slf4j = "2.0.0-alpha1"
     val logbackClassic = "1.3.0-alpha5"
     val jansi = "1.18"
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin")
+
+    implementation("org.apache.httpcomponents:fluent-hc:$httpClient")
 
     /* Logging */
     implementation("org.slf4j:slf4j-api:$slf4j")
