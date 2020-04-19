@@ -11,10 +11,6 @@ group = "com.albertattard.presentation"
 version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

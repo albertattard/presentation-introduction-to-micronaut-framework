@@ -12,24 +12,7 @@ plugins {
     id("com.github.ben-manes.versions").version("0.28.0")
 }
 
-repositories {
-    mavenLocal()
-    jcenter()
-}
-
 val developmentOnly: Configuration by configurations.creating
-
-configurations {
-    all {
-        resolutionStrategy {
-            val ktlint = "0.36.0"
-            force(
-                "com.pinterest:ktlint:$ktlint",
-                "com.pinterest.ktlint:ktlint-reporter-checkstyle:$ktlint"
-            )
-        }
-    }
-}
 
 tasks {
     withType<KotlinCompile> {

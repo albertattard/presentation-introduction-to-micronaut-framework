@@ -8,6 +8,18 @@ allprojects {
         mavenLocal()
         jcenter()
     }
+
+    configurations {
+        all {
+            resolutionStrategy {
+                val ktlint = "0.36.0"
+                force(
+                    "com.pinterest:ktlint:$ktlint",
+                    "com.pinterest.ktlint:ktlint-reporter-checkstyle:$ktlint"
+                )
+            }
+        }
+    }
 }
 
 subprojects {
