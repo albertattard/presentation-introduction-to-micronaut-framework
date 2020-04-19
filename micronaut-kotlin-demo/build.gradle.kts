@@ -64,6 +64,9 @@ dependencies {
     val directoryWatcher = "0.9.9"
     val jacksonModuleKotlin = "2.11.0.rc1"
     val logbackClassic = "1.3.0-alpha5"
+    val hikari = "3.4.2"
+    val exposed = "0.17.7"
+    val h2 = "1.4.200"
     val mockk = "1.9.3"
     val kotlintest = "1.1.5"
     val kotlintestRunner = "3.4.0"
@@ -83,15 +86,20 @@ dependencies {
     kaptTest(platform("io.micronaut:micronaut-bom:$micronaut"))
     kaptTest("io.micronaut:micronaut-inject-java")
 
-    /* Configuring Native File Watch on Mac OS X */
-    developmentOnly("io.micronaut:micronaut-runtime-osx")
-    developmentOnly("net.java.dev.jna:jna:$jna")
-    developmentOnly("io.methvin:directory-watcher:$directoryWatcher")
+    /* Data */
+    implementation("com.zaxxer:HikariCP:$hikari")
+    implementation("org.jetbrains.exposed:exposed:$exposed")
+    implementation("com.h2database:h2:$h2")
 
     testImplementation(platform("io.micronaut:micronaut-bom:$micronaut"))
     testImplementation("io.micronaut.test:micronaut-test-kotlintest:$kotlintest")
     testImplementation("io.mockk:mockk:$mockk")
     testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintestRunner")
+
+    /* Configuring Native File Watch on Mac OS X */
+    developmentOnly("io.micronaut:micronaut-runtime-osx")
+    developmentOnly("net.java.dev.jna:jna:$jna")
+    developmentOnly("io.methvin:directory-watcher:$directoryWatcher")
 }
 
 defaultTasks("clean", "ktlintFormat", "dependencyUpdates", "test")
