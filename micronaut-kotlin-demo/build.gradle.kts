@@ -15,6 +15,7 @@ plugins {
 repositories {
     mavenLocal()
     jcenter()
+    mavenCentral()
 }
 
 val developmentOnly: Configuration by configurations.creating
@@ -78,8 +79,12 @@ dependencies {
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-management")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlin")
-    runtimeOnly("ch.qos.logback:logback-classic:$logbackClassic")
 
+    /* Logging */
+    runtimeOnly("ch.qos.logback:logback-classic:$logbackClassic")
+    runtimeOnly("org.fusesource.jansi:jansi:1.18")
+
+    /* Micronaut Compiler Magic */
     kapt(platform("io.micronaut:micronaut-bom:$micronaut"))
     kapt("io.micronaut:micronaut-inject-java")
     kapt("io.micronaut:micronaut-validation")
@@ -91,6 +96,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed:$exposed")
     implementation("com.h2database:h2:$h2")
 
+    /* Testing */
     testImplementation(platform("io.micronaut:micronaut-bom:$micronaut"))
     testImplementation("io.micronaut.test:micronaut-test-kotlintest:$kotlintest")
     testImplementation("io.mockk:mockk:$mockk")
