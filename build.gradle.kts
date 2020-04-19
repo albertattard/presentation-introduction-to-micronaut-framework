@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     base
     kotlin("jvm") version "1.3.71" apply false
@@ -20,10 +22,19 @@ allprojects {
             }
         }
     }
+
+
+    tasks {
+        withType<KotlinCompile> {
+            kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
+            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.javaParameters = true
+        }
+    }
 }
 
 subprojects {
     version = "1.0"
 }
 
-defaultTasks("clean", "ktlintFormat", "dependencyUpdates", "test")
+defaultTasks("clean", "ktlintFormat", "dependencyUpdates", "test", "build")

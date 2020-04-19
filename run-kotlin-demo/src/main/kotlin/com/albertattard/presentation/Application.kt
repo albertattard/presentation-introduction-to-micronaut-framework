@@ -45,7 +45,7 @@ object Application {
                     LOGGER.warn("Failed to connect")
                 }
 
-                TimeUnit.MILLISECONDS.sleep(100)
+                TimeUnit.MILLISECONDS.sleep(50)
             }
         }
         LOGGER.debug("Application took {} milliseconds to reply ({})", timeToFirstResponse, application)

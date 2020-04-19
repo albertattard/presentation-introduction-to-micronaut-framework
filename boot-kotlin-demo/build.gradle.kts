@@ -1,11 +1,13 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring") version "1.3.71"
 
     id("org.springframework.boot") version "2.2.6.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
+
+    id("com.github.johnrengelman.shadow").version("5.2.0")
+    id("org.jlleitschuh.gradle.ktlint").version("9.2.1")
+    id("com.github.ben-manes.versions").version("0.28.0")
 }
 
 group = "com.albertattard.presentation"
@@ -13,12 +15,6 @@ version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 tasks {
-    withType<KotlinCompile> {
-        kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-        kotlinOptions.jvmTarget = "11"
-        kotlinOptions.javaParameters = true
-    }
-
     test {
         useJUnitPlatform()
         testLogging {

@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
@@ -13,12 +12,6 @@ plugins {
 }
 
 tasks {
-    withType<KotlinCompile> {
-        kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-        kotlinOptions.jvmTarget = "11"
-        kotlinOptions.javaParameters = true
-    }
-
     test {
         useJUnitPlatform()
         testLogging {
@@ -91,5 +84,3 @@ dependencies {
     developmentOnly("net.java.dev.jna:jna:$jna")
     developmentOnly("io.methvin:directory-watcher:$directoryWatcher")
 }
-
-defaultTasks("clean", "ktlintFormat", "dependencyUpdates", "test")
