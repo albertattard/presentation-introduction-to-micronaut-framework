@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @Singleton
-class DatabaseContactsService(
+class ContactsDatabaseService(
     private var database: Database
 ) : ContactsService {
 

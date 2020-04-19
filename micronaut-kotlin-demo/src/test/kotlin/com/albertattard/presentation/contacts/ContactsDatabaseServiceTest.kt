@@ -11,11 +11,11 @@ import java.util.UUID
 import org.jetbrains.exposed.sql.Database
 
 @MicronautTest
-class DatabaseContactsServiceTest(
+class ContactsDatabaseServiceTest(
     private val database: Database
 ) : StringSpec({
 
-    val service = DatabaseContactsService(database)
+    val service = ContactsDatabaseService(database)
 
     "should add the contact and return the id" {
         runAndRollback(database) {
