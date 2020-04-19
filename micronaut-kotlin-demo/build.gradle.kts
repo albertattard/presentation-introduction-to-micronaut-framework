@@ -50,7 +50,7 @@ tasks {
 }
 
 application {
-    mainClassName = "com.albertattard.presentation.micronaut.Application"
+    mainClassName = "com.albertattard.presentation.Application"
 }
 
 allOpen {
