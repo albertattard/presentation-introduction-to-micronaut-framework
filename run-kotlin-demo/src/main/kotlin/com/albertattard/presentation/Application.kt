@@ -19,6 +19,7 @@ object Application {
     @JvmStatic
     fun main(args: Array<String>) {
         val application = when (val flag = args.firstOrNull() ?: "-m") {
+            "-b" -> "boot-kotlin-demo/build/libs/boot-kotlin-demo-1.0.0.jar"
             "-m" -> "micronaut-kotlin-demo/build/libs/micronaut-kotlin-demo-1.0-all.jar"
             else -> {
                 LOGGER.error("Unknown application flag '{}'", flag)
@@ -52,7 +53,7 @@ object Application {
                 TimeUnit.MILLISECONDS.sleep(100)
             }
         }
-        LOGGER.debug("Application took {} milliseconds to reply", timeToFirstResponse)
+        LOGGER.debug("Application took {} milliseconds to reply ({})", timeToFirstResponse, application)
 
         LOGGER.debug("Stopping the application")
         process.destroy()
