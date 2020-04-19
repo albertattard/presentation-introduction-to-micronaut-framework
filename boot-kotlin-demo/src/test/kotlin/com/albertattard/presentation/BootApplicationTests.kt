@@ -1,4 +1,4 @@
-package com.albertattard.presentation.boot
+package com.albertattard.presentation
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-    kotlin("jvm").version("1.3.72")
-    kotlin("kapt").version("1.3.72")
+    kotlin("jvm")
+    kotlin("kapt")
     kotlin("plugin.allopen").version("1.3.72")
 
     id("com.github.johnrengelman.shadow").version("5.2.0")

@@ -1,4 +1,4 @@
-package com.albertattard.presentation.boot
+package com.albertattard.presentation
 
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
