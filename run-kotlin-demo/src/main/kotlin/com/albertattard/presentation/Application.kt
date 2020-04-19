@@ -1,6 +1,7 @@
 package com.albertattard.presentation
 
 import java.io.File
+import java.net.ConnectException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -27,11 +28,24 @@ object Application {
             .uri(URI.create("http://localhost:8080/contacts/"))
             .build()
 
-        val response: HttpResponse<String> = client.send(request, BodyHandlers.ofString())
-        println(response.body())
+        loop@ for (i in 1..25) {
+            try {
+                LOGGER.debug("Checking")
+                val response: HttpResponse<String> = client.send(request, BodyHandlers.ofString())
+                LOGGER.debug("Response {}", response.body())
+                break@loop
+            } catch (e: ConnectException) {
+                LOGGER.warn("Failed to connect")
+            }
 
-        TimeUnit.SECONDS.sleep(5)
+            TimeUnit.MILLISECONDS.sleep(100)
+        }
+
+        LOGGER.debug("Stopping the application")
         process.destroy()
-        process.exitValue()
+        if (!process.waitFor(1, TimeUnit.MINUTES)) {
+            LOGGER.debug("Killing the application")
+            process.destroyForcibly()
+        }
     }
 }
