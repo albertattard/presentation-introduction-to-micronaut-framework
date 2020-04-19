@@ -2,14 +2,14 @@ package com.albertattard.presentation.contacts
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.micronaut.context.annotation.Bean
-import io.micronaut.context.annotation.Factory
-import javax.sql.DataSource
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import javax.sql.DataSource
 
-@Factory
+@Configuration
 class DatabaseFactory {
 
     @Bean

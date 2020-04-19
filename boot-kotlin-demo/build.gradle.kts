@@ -28,6 +28,10 @@ tasks {
 }
 
 dependencies {
+    val hikari = "3.4.2"
+    val exposed = "0.17.7"
+    val h2 = "1.4.200"
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
@@ -37,7 +41,9 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
-    runtimeOnly("com.h2database:h2")
+    implementation("com.zaxxer:HikariCP:$hikari")
+    implementation("org.jetbrains.exposed:exposed:$exposed")
+    runtimeOnly("com.h2database:h2:$h2")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
