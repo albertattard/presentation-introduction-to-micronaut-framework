@@ -15,30 +15,137 @@ object Application {
 
     private val LOGGER = LoggerFactory.getLogger(Application::class.java)
 
+    private var application = ApplicationType.MICRONAUT
+
     @JvmStatic
     fun main(args: Array<String>) {
-        val application = when (val flag = args.firstOrNull() ?: "-m") {
-            "-b" -> "boot-kotlin-demo/build/libs/boot-kotlin-demo-1.0.0.jar"
-            "-m" -> "micronaut-kotlin-demo/build/libs/micronaut-kotlin-demo-1.0-all.jar"
-            else -> {
-                LOGGER.error("Unknown application flag '{}'", flag)
-                exitProcess(-1)
-            }
+        while (true) {
+            val next = determineNextOperation()
+            next.run()
         }
+    }
 
-        LOGGER.debug("Starting application")
-        val process = ProcessBuilder()
+    @JvmStatic
+    private fun determineNextOperation(): Operation {
+        while (true) {
+            display("--------------------------------------------------")
+            display("Next Operation")
+            display("--------------------------------------------------")
+            for (option in Operation.values()) {
+                display("[${option.flag}] ${option.caption}")
+            }
+            display("--------------------------------------------------")
+
+            val input = readLine()
+            val operation = input.let { input ->
+                Operation.values()
+                    .firstOrNull { input == it.flag }
+            }
+            if (operation != null) {
+                return operation
+            }
+
+            display("Invalid input: '$input'")
+        }
+    }
+
+    private enum class Operation(val caption: String, val flag: String) : Runnable {
+        SET_APPLICATION("Set Application", "a") {
+            override fun run() {
+                while (true) {
+                    display("--------------------------------------------------")
+                    display("Select application")
+                    display("--------------------------------------------------")
+                    for (application in ApplicationType.values()) {
+                        display("[${application.flag}] ${application.caption}")
+                    }
+                    display("[x] Keep current (${application.caption})")
+                    display("--------------------------------------------------")
+
+                    val input = readLine()
+                    val selected = input.let { input ->
+                        when (input) {
+                            "x" -> application
+                            else -> ApplicationType.values()
+                                .firstOrNull { input == it.flag }
+                        }
+                    }
+
+                    if (selected != null) {
+                        application = selected
+                        return
+                    }
+
+                    display("Invalid input: '$input'")
+                }
+            }
+        },
+
+        TIME_TO_FIRST_RESPONSE("Time to First Response", "f") {
+            override fun run() {
+                LOGGER.debug("Starting application {}", application)
+                val process = startApplication()
+
+                val timeToFirstResponse = try {
+                    timeToFirstResponse()
+                } finally {
+                    LOGGER.debug("Stopping the application")
+                    stopApplication(process)
+                }
+
+                if (timeToFirstResponse > 0) {
+                    display("$application Application took $timeToFirstResponse milliseconds to reply")
+                } else {
+                    display("$application Application timed out")
+                }
+            }
+        },
+
+        EXIT("Exit", "x") {
+            override fun run() {
+                display("Bye bye")
+                exitProcess(0)
+            }
+        };
+    }
+
+    private enum class ApplicationType(val caption: String, val flag: String, val path: String) {
+        BOOT("Spring Boot", "b", "boot-kotlin-demo/build/libs/boot-kotlin-demo-1.0.0.jar"),
+        MICRONAUT("Micronaut", "m", "micronaut-kotlin-demo/build/libs/micronaut-kotlin-demo-1.0-all.jar");
+
+        override fun toString(): String {
+            return caption
+        }
+    }
+
+    @JvmStatic
+    private fun startApplication(): Process =
+        ProcessBuilder()
             .inheritIO()
             .directory(File("."))
-            .command("java", "-jar", application)
+            .command("java", "-jar", application.path)
             .start()
 
+    @JvmStatic
+    private fun stopApplication(process: Process) {
+        process.destroy()
+
+        /* Kill the process if it does not stop after a minute */
+        if (!process.waitFor(1, TimeUnit.MINUTES)) {
+            LOGGER.debug("Killing the application")
+            process.destroyForcibly()
+        }
+    }
+
+    @JvmStatic
+    private fun timeToFirstResponse(): Long {
         val httpClient = HttpClients.createDefault()
         httpClient.use {
             val request = HttpGet("http://localhost:8080/contacts/")
 
-            val timeToFirstResponse = measureTimeMillis {
-                loop@ for (i in 1..500) {
+            var failed = true
+            val time = measureTimeMillis {
+                loop@ for (i in 1..1000) {
                     try {
                         LOGGER.debug("Checking")
 
@@ -51,6 +158,7 @@ object Application {
                             }
                         }
 
+                        failed = false
                         break@loop
                     } catch (e: ConnectException) {
                         LOGGER.warn("Failed to connect")
@@ -59,14 +167,13 @@ object Application {
                     TimeUnit.MILLISECONDS.sleep(10)
                 }
             }
-            LOGGER.debug("Application took {} milliseconds to reply ({})", timeToFirstResponse, application)
-        }
 
-        LOGGER.debug("Stopping the application")
-        process.destroy()
-        if (!process.waitFor(1, TimeUnit.MINUTES)) {
-            LOGGER.debug("Killing the application")
-            process.destroyForcibly()
+            return if (failed) -1L else time
         }
+    }
+
+    @JvmStatic
+    private fun display(message: String) {
+        println(message)
     }
 }

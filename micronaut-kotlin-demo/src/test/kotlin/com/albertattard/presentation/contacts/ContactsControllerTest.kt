@@ -41,7 +41,7 @@ class ContactsControllerTest(
 
         /* TODO: check why this needs to be verified */
         verify(exactly = 2) { mock.hashCode() }
-        verify(exactly = 1) { mock.toString() }
+        // verify(exactly = 1) { mock.toString() }
         confirmVerified(mock)
     }
 
@@ -60,7 +60,7 @@ class ContactsControllerTest(
 
         /* TODO: check why this needs to be verified */
         verify(exactly = 2) { mock.hashCode() }
-        verify(exactly = 1) { mock.toString() }
+        // verify(exactly = 1) { mock.toString() }
         confirmVerified(mock)
     }
 
@@ -79,7 +79,7 @@ class ContactsControllerTest(
 
         /* TODO: check why this needs to be verified */
         verify(exactly = 2) { mock.hashCode() }
-        verify(exactly = 1) { mock.toString() }
+        // verify(exactly = 1) { mock.toString() }
         confirmVerified(mock)
     }
 
@@ -99,7 +99,7 @@ class ContactsControllerTest(
 
         /* TODO: check why this needs to be verified */
         verify(exactly = 2) { mock.hashCode() }
-        verify(exactly = 1) { mock.toString() }
+        // verify(exactly = 1) { mock.toString() }
         confirmVerified(mock)
     }
 }) {

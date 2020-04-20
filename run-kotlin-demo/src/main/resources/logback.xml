@@ -1,13 +1,4 @@
 <configuration>
-
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <withJansi>true</withJansi>
-        <encoder>
-            <pattern>%cyan(%d{HH:mm:ss.SSS}) %gray([%thread]) %highlight(%-5level) %magenta(%logger{36}) - %msg%n
-            </pattern>
-        </encoder>
-    </appender>
-
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/application.log</file>
         <append>true</append>
@@ -17,8 +8,7 @@
         </encoder>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="FILE"/>
-        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
