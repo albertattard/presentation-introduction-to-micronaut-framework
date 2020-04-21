@@ -1,12 +1,20 @@
 package com.albertattard.presentation
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.File
 import java.net.ConnectException
+import java.util.UUID
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
-import org.apache.http.HttpEntity
+import org.apache.http.HttpHeaders
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.slf4j.LoggerFactory
@@ -37,9 +45,9 @@ object Application {
             display("--------------------------------------------------")
 
             val input = readLine()
-            val operation = input.let { input ->
+            val operation = input.let { i ->
                 Operation.values()
-                    .firstOrNull { input == it.flag }
+                    .firstOrNull { i == it.flag }
             }
             if (operation != null) {
                 return operation
@@ -63,11 +71,11 @@ object Application {
                     display("--------------------------------------------------")
 
                     val input = readLine()
-                    val selected = input.let { input ->
-                        when (input) {
+                    val selected = input.let { i ->
+                        when (i) {
                             "x" -> application
                             else -> ApplicationType.values()
-                                .firstOrNull { input == it.flag }
+                                .firstOrNull { i == it.flag }
                         }
                     }
 
@@ -83,13 +91,11 @@ object Application {
 
         TIME_TO_FIRST_RESPONSE("Time to First Response", "f") {
             override fun run() {
-                LOGGER.debug("Starting application {}", application)
                 val process = startApplication()
 
                 val timeToFirstResponse = try {
                     timeToFirstResponse()
                 } finally {
-                    LOGGER.debug("Stopping the application")
                     stopApplication(process)
                 }
 
@@ -101,12 +107,65 @@ object Application {
             }
         },
 
+        RUN_APPLICATION("Run application", "r") {
+            override fun run() {
+                val process = startApplication()
+                display("Application is staring. Type x to stop application")
+                display("The application can be accessed from: http://localhost:8080/contacts/")
+
+                try {
+                    while (true) {
+                        val input = readLine()
+                        if (input == "x") {
+                            break
+                        }
+
+                        display("Invalid input '$input'")
+                        display("Type x to stop application")
+                    }
+                } finally {
+                    stopApplication(process)
+                }
+            }
+        },
+
+        STRESS_TEST_APPLICATION("Stress-test application", "s") {
+            override fun run() {
+                val process = startApplication()
+                display("Application is staring. Type x to stop application")
+
+                try {
+                    val terminate = AtomicBoolean()
+
+                    val thread = thread {
+                        stressTestApplication { terminate.get() }
+                    }
+
+                    while (true) {
+                        val input = readLine()
+                        if (input == "x") {
+                            terminate.set(true)
+                            break
+                        }
+
+                        display("Invalid input '$input'")
+                        display("Type x to stop application")
+                    }
+
+                    display("Waiting for the background thread to stop")
+                    thread.join()
+                } finally {
+                    stopApplication(process)
+                }
+            }
+        },
+
         EXIT("Exit", "x") {
             override fun run() {
                 display("Bye bye")
                 exitProcess(0)
             }
-        };
+        }
     }
 
     private enum class ApplicationType(val caption: String, val flag: String, val path: String) {
@@ -138,37 +197,88 @@ object Application {
     }
 
     @JvmStatic
-    private fun timeToFirstResponse(): Long {
-        val httpClient = HttpClients.createDefault()
-        httpClient.use {
-            val request = HttpGet("http://localhost:8080/contacts/")
+    private fun timeToFirstResponse(): Long =
+        HttpClients.createDefault().use {
+            waitForFirstResponse(it)
+        }
 
-            var failed = true
-            val time = measureTimeMillis {
-                loop@ for (i in 1..1000) {
-                    try {
-                        LOGGER.debug("Checking")
+    @JvmStatic
+    private fun stressTestApplication(termination: () -> Boolean) {
+        HttpClients.createDefault().use { client ->
+            display("Waiting for the $application application to start")
+            waitForFirstResponse(client)
 
-                        val response = httpClient.execute(request)
-                        response.use {
-                            val entity: HttpEntity? = response.entity
-                            if (entity != null) {
-                                val result = EntityUtils.toString(entity)
-                                LOGGER.debug("Response {}", result)
-                            }
-                        }
-
-                        failed = false
-                        break@loop
-                    } catch (e: ConnectException) {
-                        LOGGER.warn("Failed to connect")
-                    }
-
-                    TimeUnit.MILLISECONDS.sleep(10)
-                }
+            display("Creating contacts at random until interrupted")
+            while (!termination()) {
+                val id = create(client)
+                val contact = read(client, id)
+                display("Created $contact")
             }
+        }
+    }
 
-            return if (failed) -1L else time
+    @JvmStatic
+    private fun waitForFirstResponse(httpClient: CloseableHttpClient): Long {
+        var failed = true
+        val time = measureTimeMillis {
+            loop@ for (i in 1..1000) {
+                try {
+                    list(httpClient)
+                    failed = false
+                    break@loop
+                } catch (e: ConnectException) {
+                    /* Ignore */
+                }
+
+                TimeUnit.MILLISECONDS.sleep(10)
+            }
+        }
+
+        return if (failed) -1L else time
+    }
+
+    @JvmStatic
+    private fun list(httpClient: CloseableHttpClient): List<Contact> {
+        val request = HttpGet("http://localhost:8080/contacts/")
+        val response = httpClient.execute(request)
+        return response.use { r ->
+            r.entity?.let { e ->
+                val mapper = jacksonObjectMapper()
+                mapper.readValue<List<Contact>>(EntityUtils.toString(e))
+            } ?: throw RuntimeException("Missing Content")
+        }
+    }
+
+    @JvmStatic
+    private fun read(httpClient: CloseableHttpClient, id: UUID): Contact {
+        val request = HttpGet("http://localhost:8080/contacts/$id")
+        val response = httpClient.execute(request)
+        return response.use { r ->
+            r.entity?.let { e ->
+                val mapper = jacksonObjectMapper()
+                mapper.readValue<Contact>(EntityUtils.toString(e))
+            } ?: throw RuntimeException("Missing Content")
+        }
+    }
+
+    @JvmStatic
+    private fun create(httpClient: CloseableHttpClient): UUID {
+        val create = HttpPost("http://localhost:8080/contacts/")
+
+        val contact = CreateContact.random()
+        val json = contact.toJson()
+        create.entity = StringEntity(json)
+        create.setHeader("Accept", "application/json")
+        create.setHeader("Content-type", "application/json")
+
+        val response = httpClient.execute(create)
+        return response.use {
+            response.getHeaders(HttpHeaders.LOCATION)
+                .firstOrNull()
+                ?.value
+                ?.substringAfter("/contacts/")
+                ?.let { UUID.fromString(it) }
+                ?: throw RuntimeException("Missing location")
         }
     }
 

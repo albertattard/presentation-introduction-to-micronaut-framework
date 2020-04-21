@@ -35,16 +35,22 @@ application {
 dependencies {
     val kotlin = "1.3.72"
     val httpClient = "4.5.12"
+    val jackson = "2.10.+"
     val slf4j = "2.0.0-alpha1"
     val logbackClassic = "1.3.0-alpha5"
     val jansi = "1.18"
+    val junit = "5.7.0-M1"
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin")
 
     implementation("org.apache.httpcomponents:httpclient:$httpClient")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson")
 
     /* Logging */
     implementation("org.slf4j:slf4j-api:$slf4j")
     runtimeOnly("ch.qos.logback:logback-classic:$logbackClassic")
     runtimeOnly("org.fusesource.jansi:jansi:$jansi")
+
+    /*Testing */
+    testImplementation("org.junit.jupiter:junit-jupiter:$junit")
 }
