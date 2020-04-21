@@ -28,9 +28,7 @@ class ContactsControllerTest(
         val mock = getMock(service)
 
         val create = CreateContact(name = "Albert Attard", email = "albertattard@gmail.com")
-
-        val created =
-            CreatedContact(UUID.randomUUID())
+        val created = CreatedContact(UUID.randomUUID())
         every { mock.create(create) } returns created
 
         val response = client.toBlocking().exchange(HttpRequest.POST("/", create), CreatedContact::class.java)
