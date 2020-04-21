@@ -8,6 +8,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.thread
+import kotlin.random.Random
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 import org.apache.http.HttpHeaders
@@ -208,11 +209,18 @@ object Application {
             display("Waiting for the $application application to start")
             waitForFirstResponse(client)
 
-            display("Creating contacts at random until interrupted")
+            val size = 2000
+            display("Creating random $size contacts")
+
+            val created = (1..size).map {
+                create(client)
+            }.toList()
+
+            display("Retrieving contacts at random, until interrupted")
             while (!termination()) {
-                val id = create(client)
+                val id = created[Random.nextInt(created.size)]
                 val contact = read(client, id)
-                display("Created $contact")
+                display("Retrieved: $contact")
             }
         }
     }

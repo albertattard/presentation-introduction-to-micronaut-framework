@@ -35,7 +35,7 @@ application {
 dependencies {
     val kotlin = "1.3.72"
     val httpClient = "4.5.12"
-    val jackson = "2.10.+"
+    val jackson = "2.11.0.rc1"
     val slf4j = "2.0.0-alpha1"
     val logbackClassic = "1.3.0-alpha5"
     val jansi = "1.18"
