@@ -17,8 +17,8 @@
 \usecolortheme{spruce}
 \setbeamercolor{background canvas}{bg=white}
 
-\title[Micronaut]{Introduction to Micronaut Framework}
-\subtitle{A modern, JVM-based, full-stack framework for building modular, easily testable microservice and serverless applications.}
+\title[Micronaut]{Micronaut}
+\subtitle{and the the role of \textbf{Java} in the new \textbf{Microservices} and \textbf{Serveless} era}
 \author{\texorpdfstring{Albert Attard\newline\url{albert.attard@thoughtworks.com}}{Albert Attard}}
 \institute{\large \href{https://thoughtworks.com}{\textbf{ThoughtWorks}.com}}
 \date{}
@@ -31,53 +31,66 @@
   \end{frame}
 
 
-  \begin{frame}[t]{Micronaut}
-    \textbf{What is Micronaut?}\\[6pt]
-    Micronaut is a framework based on the JVM that enables fast development of low memory footprint application.
-
-    This makes it a good candidate for building microservices and serverless applications.
-  \end{frame}
-
-  \begin{frame}[t]{Another Framework?}
-    \textbf{Spring Boot} dominates the market, according to \href{https://www.jrebel.com/sites/rebel/files/pdfs/ebook-jrebel-java-productivity-report.pdf}{JRebel's 2020 Java Developer Productivity Report}
-
-    \begin{tikzpicture}
-      \pie [rotate = 0, color={green!5, green!10}]
-      {82.70/Spring Boot,
-      17.3/Others}
-    \end{tikzpicture}
-
-  \end{frame}
-
-
-  \begin{frame}[t]{Spring Boot}
-    Spring Boot is a sold framework that leverages the Spring ecosystem and enables fast development cycles and minimise boilerplate
-
-    It simplifies bootstrapping and development of new Spring based applications by providing opinionated defaults.
-
-    Spring Boot provides a vast number of libraries that take advantage of it and make is easy to adopt (\href{https://docs.spring.io/spring-boot/docs/2.0.0.M5/reference/html/boot-features-developing-auto-configuration.html}{using the auto-configuration}).
-
-    \vspace{16pt}
-    \textbf{So why don't we use Spring Boot?}
-  \end{frame}
-
-
-  \begin{frame}[t]{Reflection}
-    Spring, like many other libraries, rely on reflection to resolve dependencies and perform key tasks
-
-    Reflection has two main drawbacks
+  \begin{frame}[t]{Agenda}
     \begin{itemize}
-      \item \textbf{Memory} - each library that makes use of reflection creates its own cache, with the class being the smallest unit.
-      \item \textbf{Performance} - the application need to perform all reflection logic at runtime which slows the application down
+      \item \textbf{Microservices, Serverless and Java}
+      \item \textbf{Mirconaut}
     \end{itemize}
+  \end{frame}
 
-    \vspace{16pt}
-    Spring Boot enables fast development, but suffers from slow start-up time and higher memory footprint
+
+  \begin{frame}[t]{Microservices}
+    "\textit{The microservice architectural style is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API.}
+
+    \textit{These services are built around business capabilities and independently deployable by fully automated deployment machinery.}" (\href{https://martinfowler.com/articles/microservices.html}{reference})
+
+    \textbf{Martin Fowler} - ThoughtWorks
+  \end{frame}
+
+
+  \begin{frame}[t]{Serverless}
+    "\textit{Serverless architectures are application designs that incorporate third-party “Backend as a Service” (BaaS) services, and/or that include custom code run in managed, ephemeral containers on a “Functions as a Service” (FaaS) platform.}" (\href{https://martinfowler.com/articles/serverless.html}{reference})
+
+    \textbf{Martin Fowler} - ThoughtWorks
+  \end{frame}
+
+
+  \begin{frame}[t]{Elasticity}
+    The load of an application may vary, depending on the current usage.
+
+    Take Netflix for example. Many subscribers will be watching the new episodes of a highly anticipated show as soon as these are released. This load will go away once the hype dies out.
+
+    The ability to adjust to the load is called \textbf{elasticity}.
+
+    An application is said to be \textbf{elastic} if the application can grow and shrink according to the load.
+  \end{frame}
+
+
+  \begin{frame}[t]{Cloud Platforms}
+    Cloud platforms, such as \href{https://aws.amazon.com/}{AWS} or \href{https://cloud.google.com/}{Google Cloud}, are well known for providing resources on demand
+
+    No need to provision the services ahead of time as cloud platforms shine at supporting elasticity *
+    \newline
+    {\footnotesize * \textit{given that your application can take advantage of this}}
+  \end{frame}
+
+
+  \begin{frame}[t]{Challenges}
+    "\textit{The take-away, though, is that mainstream Java is slow to start and you need to do extra work to get around that. My reaction is “\textbf{Maybe don’t use Java then}.”}" (\href{https://www.tbray.org/ongoing/When/201x/2018/12/14/SF-4}{reference})
+
+    \href{https://www.linkedin.com/in/timbraysoftwareguy/}{\textbf{Tim Bray}} - AWS geek @ Amazon
+  \end{frame}
+
+
+  \begin{frame}[t]{Is it Java's Fault?}
+    "\textit{\textbf{And of course it’s not all Java’s fault}; a lot of app code starts up slow because of massive dependency-injection frameworks like \href{https://spring.io/}{Spring} and \href{https://github.com/google/guice}{Guice}; these tend to prioritize flurries of calls through the Java reflection APIs over handling that first request.}
+
+    \textit{Now, Java needn’t have sluggish startup; if you must have dependency injection, \textbf{check out \href{https://github.com/google/dagger}{Dagger}, which tries to do it at compile time}.}" (\href{https://www.tbray.org/ongoing/When/201x/2018/12/14/SF-4}{reference})
   \end{frame}
 
 
   \begin{frame}[t,fragile]{Why do we need Reflection?}
-    Spring Boot, relies on annotations to work
+    Spring, like \href{https://github.com/FasterXML/jackson-module-kotlin}{Jackson} and \href{https://hibernate.org/orm/}{Hibernate} and other libraries, relies on annotations to work
 
     Take for an instance the following bean definition
 
@@ -89,19 +102,72 @@ fun runner() =
     \end{lstlisting}
 
     \vspace{16pt}
-    Spring Boot will scan our project search for beans and it needs reflection to do this
+    Spring will scan our project search for beans and it uses reflection to do determine what needs what.
   \end{frame}
 
 
-  \begin{frame}[t]{Using the Compiler}
+  \begin{frame}[t]{Reflection}
+    Reflection has two main drawbacks
+    \begin{itemize}
+      \item \textbf{Memory} - each library that makes use of reflection creates its own cache, with the class being the smallest unit.
+      \item \textbf{Performance} - invoking methods through reflection is slower than invoking a method directly, which slows the application down.
+    \end{itemize}
+
+    \vspace{16pt}
+    Reflection allowed Spring, and other libraries, to grow and enable fast development, but suffers from slow start-up time and higher memory footprint.
+  \end{frame}
+
+
+  \begin{frame}[t]{Ahead of Time Compilation}
+    Dagger addressed this problem by using ahead of time compilation and avoid reflection and runtime bytecode generation
+
+    All required analysis by Dagger is carried our during compilation time and it generates \textbf{plain Java source code} (\textit{no bytecode magic}).
+  \end{frame}
+
+
+  \begin{frame}[t]{Micronaut}
+    "\textit{A modern, JVM-based, full-stack framework for building modular, easily testable microservice and serverless applications.}"  (\href{https://micronaut.io/}{reference})
+
+    Inspired by \href{https://github.com/google/dagger}{Dagger}, Micronaut makes us of ahead of time compilation, yet still providing the same productivity as Spring.
+
+    This makes it a good candidate for building microservices and serverless applications.
+  \end{frame}
+
+
+  \begin{frame}[t,fragile]{Different Approach}
     Micronaut takes a different approach
+    
     \begin{itemize}
       \item \textbf{Compiler} - resolves as much as possible at compile time
-      \item \textbf{Reflection} - minimise the usage of reflection
+      \item \textbf{Reflection} - does not use reflection
       \item \textbf{Productive} - make use of Spring like annotations, to keep productivity up
     \end{itemize}
+
+    \vspace{16pt}
+    \begin{lstlisting}[language=Java, backgroundcolor = \color{green!5}]
+@Controller("/contacts")
+class ContactsController constructor(
+    private var service: ContactsService
+) {  /*...*/  }
+    \end{lstlisting}
+
   \end{frame}
 
+
+  \begin{frame}[t]{GraalVM}
+    \href{https://www.graalvm.org/}{GraalVM} is a universal virtual machine that improves the performance of JVM-based languages, and others, to match the performance of native languages.
+
+    \vspace{16pt}
+    "\textit{Native images compiled with GraalVM ahead-of-time improve the startup time and reduce the memory footprint of JVM-based applications.}" (\href{https://www.graalvm.org}{reference})
+  \end{frame}
+
+
+  \begin{frame}[t]{Micronaut and GraalVM}
+    \textbf{Micronaut is also GraalVM ready}
+    
+    \vspace{16pt}
+    This means that applications written with Micronaut can take advantage of GraalVM to start quicker, run faster and use less memory.
+  \end{frame}
 
   \begin{frame}[t]{Memory Footprint}
     \begin{center}
@@ -150,13 +216,6 @@ fun runner() =
         \end{axis}
       \end{tikzpicture}
     \end{center}
-  \end{frame}
-
-
-  \begin{frame}[t]{using Blocks}
-    \begin{block}{Micronaut}
-      \textbf{Micronaut} is a modern, JVM-based, full-stack framework for building modular, easily testable microservice and serverless applications
-    \end{block}
   \end{frame}
 
 \end{document}

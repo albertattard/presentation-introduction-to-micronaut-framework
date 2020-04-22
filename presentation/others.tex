@@ -1,0 +1,67 @@
+
+
+\begin{frame}[t]{using Blocks}
+  \begin{block}{Micronaut}
+    \textbf{Micronaut} is a modern, JVM-based, full-stack framework for building modular, easily testable microservice and serverless applications
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[t]{Copy and Paste}
+
+  The term "\textit{micro web services}" was coined by \href{https://www.linkedin.com/in/pjrodgers/}{Dr. Peter Rodgers} during the Web Services Edge conference in 2005. (\href{https://web.archive.org/web/20180520124343/http://www.cloudcomputingexpo.com/node/80883}{reference})
+
+
+  Netflix and Amazon were among the early adopters of Microservices
+
+
+  The load of an application may vary, depending on the current usage.
+
+  Take Netflix for example. Many subscribers will be watching the new episodes of a highly anticipated show as soon as these are released. This load will go away once the hype dies out
+
+  The ability to adjust to the load is called \textbf{elasticity}
+
+  An application is said to be elastic if the application can grow and shrink according to the load.
+
+  Elasticity is the ability
+
+  "In cloud computing, elasticity is defined as "the degree to which a system is able to adapt to workload changes by provisioning and de-provisioning resources in an autonomic manner, such that at each point in time the available resources match the current demand as closely as possible".[1][2] Elasticity is a defining characteristic that differentiates cloud computing from previously proposed computing paradigms, such as grid computing. The dynamic adaptation of capacity, e.g., by altering the use of computing resources, to meet a varying workload is called "elastic computing".[3][4]"
+
+  Microservices and Serverless, for our context, are small applications that scale up and down as required ()
+
+  When facing more load, new instances of our applications are quickly started and stopped when the loads is reduced
+
+  Require fast startup
+
+\end{frame}
+
+
+\begin{frame}[t]{Spring Boot}
+  Spring Boot is a sold framework that leverages the Spring ecosystem and enables fast development cycles and minimise boilerplate
+
+  It simplifies bootstrapping and development of new Spring based applications by providing opinionated defaults.
+
+  Spring Boot provides a vast number of libraries that take advantage of it and make is easy to adopt (\href{https://docs.spring.io/spring-boot/docs/2.0.0.M5/reference/html/boot-features-developing-auto-configuration.html}{using the auto-configuration}).
+
+  \vspace{16pt}
+  \textbf{So why don't we just use Spring Boot?}
+\end{frame}
+
+
+
+
+\begin{frame}[t]{Another Framework?}
+  \textbf{Spring Boot} dominates the market, according to \href{https://www.jrebel.com/sites/rebel/files/pdfs/ebook-jrebel-java-productivity-report.pdf}{JRebel's 2020 Java Developer Productivity Report}
+
+
+  \vspace{16pt}
+  \begin{center}
+    \begin{tikzpicture}[scale=0.75]
+      \pie [rotate = 0, color={green!5, green!10}]
+      {82.70/Spring Boot,
+      17.3/Others}
+    \end{tikzpicture}
+
+  \end{center}
+\end{frame}
+

@@ -26,18 +26,6 @@ $ ./gradlew clean build
 
 ## Time to First Response
 
-1. Micronaut
-
-    ```bash
-    $ java -jar run-kotlin-demo/build/libs/run-kotlin-demo-1.0-all.jar -m | grep "Application took "
-    ```
-
-1. Spring Boot
-
-    ```bash
-    $ java -jar run-kotlin-demo/build/libs/run-kotlin-demo-1.0-all.jar -b | grep "Application took "
-    ```
-
 Comparing time to first response
 
 | # | Micronaut | String Boot |
@@ -50,19 +38,7 @@ Comparing time to first response
 
 # Memory Footprint
 
-1. Micronaut
-
-    ```bash
-    $ java -jar micronaut-kotlin-demo/build/libs/micronaut-kotlin-demo-1.0-all.jar
-    ```
-
-1. Spring Boot
-
-    ```bash
-    $ java -jar boot-kotlin-demo/build/libs/boot-kotlin-demo-1.0.0.jar
-    ```
-
-Comparing time to first response
+Starting application with no contacts
 
 | # | Micronaut | String Boot |
 |:-:|----------:|------------:|
