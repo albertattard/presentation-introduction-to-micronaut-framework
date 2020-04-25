@@ -2,42 +2,44 @@
 
 \begin{enumerate}
 
-	\item Micronaut CLI
+\item Micronaut CLI
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ brew list --versions micronaut
 micronaut 1.3.4
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      Install Micronaut CLI
-	      \begin{lstlisting}[language=bash]
+Install Micronaut CLI
+
+\begin{lstlisting}[language=bash]
 $ brew install micronaut
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      Upgrade Micronaut CLI
-	      \begin{lstlisting}[language=bash]
+Upgrade Micronaut CLI
+
+\begin{lstlisting}[language=bash]
 $ brew upgrade micronaut
-	      \end{lstlisting}
+\end{lstlisting}
 
-	\item Create demo application using Micronaut CLI
+\item Create demo application using Micronaut CLI
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ mn create-app demo --lang=kotlin
 | Generating Kotlin project...
 | Application created at /.../demo
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      The following commands are executed from within the \texttt{demo} directory
+The following commands are executed from within the \texttt{demo} directory
 
-	      Go into the \texttt{demo} directory
+Go into the \texttt{demo} directory
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ cd demo
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      List the directory contents
+List the directory contents
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ ls -la
 -rw-r--r-- .gitignore
 -rw-r--r-- Dockerfile
@@ -49,32 +51,32 @@ drwxr-xr-x gradle
 -rw-r--r-- micronaut-cli.yml
 -rw-r--r-- settings.gradle
 drwxr-xr-x src
-	      \end{lstlisting}
+\end{lstlisting}
 
-	\item Build the application
+\item Build the application
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ ./gradlew clean build
-	      \end{lstlisting}
+\end{lstlisting}
 
-	\item Run the application
+\item Run the application
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ java -jar build/libs/demo-0.1-all.jar
 14:20:51.355 [main] INFO io...Micronaut - Startup completed in 1138ms. Server Running: http://localhost:8080
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      Make a request to application
+Make a request to application
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ curl http://localhost:8080
 {"message":"Page Not Found","_links":{"self":{"href":"/","templated":false}}}
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      Stop the application (\texttt{[CONTROL] + [C]})
+Stop the application (\texttt{[CONTROL] + [C]})
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 15:02:49.278 [Thread-2] INFO io...Micronaut - Embedded Application shutting down
-	      \end{lstlisting}
+\end{lstlisting}
 
 \end{enumerate}

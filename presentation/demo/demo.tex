@@ -1,14 +1,15 @@
-\documentclass[12pt, letterpaper]{article}
+\documentclass[12pt, a4paper]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage{url}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{listings}
 \usepackage{titlesec}
+\usepackage{hyperref}
 
-\titleclass{\section}{top}
-\newcommand\sectionbreak{\clearpage}
-\input{code_formatting.tex}
+\input{formatting_toc.tex}
+\input{formatting_code.tex}
+\input{formatting_section.tex}
 
 \title{Introduction to Micronaut}
 \author{Albert Attard}
@@ -22,5 +23,7 @@
 \input{setup.tex}
 \input{configuration.tex}
 \input{controller.tex}
+\input{service.tex}
+\input{references.tex}
 
 \end{document}
