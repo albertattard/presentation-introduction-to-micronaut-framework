@@ -9,3 +9,6 @@
 *.gz
 *.toc
 *.vrb
+
+**/__latexindent_temp.tex
+**/*.fdb_latexmk

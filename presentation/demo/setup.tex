@@ -1,0 +1,80 @@
+\section{Setup}\label{sec:setup}
+
+\begin{enumerate}
+
+	\item Micronaut CLI
+
+	      \begin{lstlisting}[language=bash]
+$ brew list --versions micronaut
+micronaut 1.3.4
+	      \end{lstlisting}
+
+	      Install Micronaut CLI
+	      \begin{lstlisting}[language=bash]
+$ brew install micronaut
+	      \end{lstlisting}
+
+	      Upgrade Micronaut CLI
+	      \begin{lstlisting}[language=bash]
+$ brew upgrade micronaut
+	      \end{lstlisting}
+
+	\item Create demo application using Micronaut CLI
+
+	      \begin{lstlisting}[language=bash]
+$ mn create-app demo --lang=kotlin
+| Generating Kotlin project...
+| Application created at /.../demo
+	      \end{lstlisting}
+
+	      The following commands are executed from within the \texttt{demo} directory
+
+	      Go into the \texttt{demo} directory
+
+	      \begin{lstlisting}[language=bash]
+$ cd demo
+	      \end{lstlisting}
+
+	      List the directory contents
+
+	      \begin{lstlisting}[language=bash]
+$ ls -la
+-rw-r--r-- .gitignore
+-rw-r--r-- Dockerfile
+-rw-r--r-- build.gradle
+drwxr-xr-x gradle
+-rw-r--r-- gradle.properties
+-rwxr--r-- gradlew
+-rwxr--r-- gradlew.bat
+-rw-r--r-- micronaut-cli.yml
+-rw-r--r-- settings.gradle
+drwxr-xr-x src
+	      \end{lstlisting}
+
+	\item Build the application
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+	      \end{lstlisting}
+
+	\item Run the application
+
+	      \begin{lstlisting}[language=bash]
+$ java -jar build/libs/demo-0.1-all.jar
+14:20:51.355 [main] INFO io...Micronaut - Startup completed in 1138ms. Server Running: http://localhost:8080
+	      \end{lstlisting}
+
+	      Make a request to application
+
+	      \begin{lstlisting}[language=bash]
+$ curl http://localhost:8080
+{"message":"Page Not Found","_links":{"self":{"href":"/","templated":false}}}
+	      \end{lstlisting}
+
+	      Stop the application (\texttt{[CONTROL] + [C]})
+
+	      \begin{lstlisting}[language=bash]
+15:02:49.278 [Thread-2] INFO io...Micronaut - Embedded Application shutting down
+	      \end{lstlisting}
+
+\end{enumerate}

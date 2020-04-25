@@ -1,0 +1,231 @@
+\section{Configure Application}\label{sec:configuration}
+
+\begin{enumerate}
+
+	\item Open the application
+	      \begin{lstlisting}[language=bash]
+$ idea .
+	      \end{lstlisting}
+
+	\item (\textbf{Optional}) Take advantage of the Kotlin DSL
+
+	      Convert the \texttt{build.gradle} file into Kotlin DSL \texttt{build.gradle.kts}
+	      \begin{lstlisting}[language=Kotlin]
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+  application
+  kotlin("jvm").version("1.3.50")
+  kotlin("kapt").version("1.3.50")
+  kotlin("plugin.allopen").version("1.3.50")
+
+  id("com.github.johnrengelman.shadow").version("5.2.0")
+}
+
+repositories {
+  mavenLocal()
+  jcenter()
+}
+
+val developmentOnly: Configuration by configurations.creating
+
+dependencies {
+  val micronautVersion = "1.3.4"
+  val kotlinVersion = "1.3.50"
+  val jackson = "2.9.8"
+  val logback = "1.2.3"
+  val jansi = "1.18"
+  val mockk = "1.9.3"
+  val kotlintest = "1.1.2"
+  val kotlintestRunner = "3.3.2"
+
+  implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+  implementation("io.micronaut:micronaut-runtime")
+  implementation("io.micronaut:micronaut-http-server-netty")
+  implementation("io.micronaut:micronaut-http-client")
+
+  runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson")
+  runtimeOnly("ch.qos.logback:logback-classic:$logback")
+  runtimeOnly("org.fusesource.jansi:ansi:$jansi")
+
+  kapt(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+  kapt("io.micronaut:micronaut-inject-java")
+  kapt("io.micronaut:micronaut-validation")
+  kaptTest(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+  kaptTest("io.micronaut:micronaut-inject-java")
+
+  testImplementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+  testImplementation("io.micronaut.test:micronaut-test-kotlintest:$kotlintest")
+  testImplementation("io.mockk:mockk:$mockk")
+  testImplementation("io.kotlintest:kotlintest-runner-junit5:$kotlintestRunner")
+}
+
+application {
+  mainClassName = "demo.Application"
+}
+
+tasks {
+  withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.javaParameters = true
+  }
+
+  withType<JavaExec> {
+    classpath += developmentOnly
+    jvmArgs("-noverify", "-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
+  }
+
+  test {
+    useJUnitPlatform()
+    testLogging {
+      events("passed", "skipped", "failed")
+    }
+
+    classpath += developmentOnly
+  }
+
+  named<ShadowJar>("shadowJar") {
+    mergeServiceFiles()
+  }
+}
+
+allOpen {
+  annotation("io.micronaut.aop.Around")
+}
+	      \end{lstlisting}
+
+	      Delete the file \texttt{gradle.properties} as this is not used anymore
+
+	      Convert the \texttt{settings.gradle} file into Kotlin DSL \texttt{settings.gradle.kts}
+
+	      \begin{lstlisting}[language=Kotlin]
+rootProject.name="demo"
+	      \end{lstlisting}
+
+	      Build the projects
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+	      \end{lstlisting}
+
+	\item Update Dependencies Versions
+
+	      Add the plugin: \textit{com.github.ben-manes.versions}
+	      \newline
+	      {\footnotesize \url{https://plugins.gradle.org/plugin/com.github.ben-manes.versions}}
+
+	      \begin{itemize}
+
+	      	\item[] \textbf{Kotlin DSL}
+	      	      \newline
+	      	      File: \texttt{build.gradle.kts}
+
+	      	      \begin{lstlisting}[language=Kotlin]
+plugins {
+  id("com.github.ben-manes.versions") version "0.28.0"
+}
+	      	      \end{lstlisting}
+
+	      	\item[] \textbf{Groovy}
+	      	      \newline
+	      	      File: \texttt{build.gradle}
+
+	      	      \begin{lstlisting}[language=Groovy]
+plugins {
+  id "com.github.ben-manes.versions" version "0.28.0"
+}
+	      	      \end{lstlisting}
+
+	      \end{itemize}
+
+	      Check the version of the dependencies
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew dependencyUpdates
+	      \end{lstlisting}
+
+	      Update the versions based on the recommendations.
+
+	      \begin{itemize}
+	      	\item  Gradle: \texttt{6.4-rc-2}
+	      	\item  Kotlin: \texttt{1.3.72}
+	      	\item Micronaut: \texttt{2.0.0.M2}
+	      	\item Jackson: \texttt{2.11.0.rc1}
+	      	\item Logback: \texttt{1.3.0-alpha5}
+	      	\item Kotlintest: \texttt{1.1.5}
+	      	\item Kotlintest Runner: \texttt{3.4.0}
+
+	      	      The latest version, \texttt{3.4.2}, is causing issues when running the tests.
+
+	      	      \begin{lstlisting}[language=bash]
+demo.GreetingControllerTest > initializationError FAILED
+    java.lang.ArrayStoreException at AnnotationParser.java:724
+	      	      \end{lstlisting}
+
+	      	      Reverted to the latest working version.
+	      \end{itemize}
+
+	\item Build the application to confirm that all is in order.
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+	      \end{lstlisting}
+
+	\item Package and run the application
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew shadowJar
+$ java -jar build/libs/demo-all.jar
+	      \end{lstlisting}
+
+	      Note that the JAR file path does not have the version as this was removed form the \texttt{build.gradle.kts} file.
+
+	      An exception may be thrown due to a missing class
+
+	      \begin{lstlisting}[language=bash]
+18:00:00,000 |-WARN in ch.qos.logback.core.ConsoleAppender[STDOUT] - Failed to create AnsiPrintStream. Falling back on the default stream. java.lang.ClassNotFoundException: org.fusesource.jansi.AnsiConsole
+	at java.lang.ClassNotFoundException: org.fusesource.jansi.AnsiConsole
+  ...
+	      \end{lstlisting}
+
+	      Add the dependency: \textit{org.fusesource.jansi:jansi}
+	      \newline
+	      {\footnotesize \url{https://mvnrepository.com/artifact/org.fusesource.jansi/jansi}}
+
+	      \begin{itemize}
+
+	      	\item[] \textbf{Kotlin DSL}
+	      	      \newline
+	      	      File: \texttt{build.gradle.kts}
+
+	      	      \begin{lstlisting}[language=Kotlin]
+dependencies {
+  runtimeOnly("org.fusesource.jansi:jansi:1.18")
+}
+	      	      \end{lstlisting}
+
+	      	\item[] \textbf{Groovy}
+	      	      \newline
+	      	      Edit file \textit{build.gradle}
+
+	      	      \begin{lstlisting}[language=Groovy]
+dependencies {
+  runtimeOnly 'org.fusesource.jansi:jansi:1.18'
+}
+	      	      \end{lstlisting}
+
+	      \end{itemize}
+
+	      Repackage and rerun the application.
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew shadowJar
+$ java -jar build/libs/demo-all.jar
+	      \end{lstlisting}
+
+\end{enumerate}
+

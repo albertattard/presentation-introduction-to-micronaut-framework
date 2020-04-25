@@ -1,0 +1,103 @@
+\section{Controller}\label{sec:controller}
+
+\begin{enumerate}
+
+	\item  Create Test Controller
+
+	      File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
+
+	      \begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.annotation.Client
+import io.micronaut.test.annotation.MicronautTest
+
+@MicronautTest
+class GreetingControllerTest(
+  @Client("/greeting") private val client: RxHttpClient
+) : StringSpec({
+  "should return the greeting message returned by the greeting service" {
+    val expected = Greeting("Hello Micronaut World")
+
+    val result = client.toBlocking().retrieve("/", Greeting::class.java)
+    result shouldBe expected
+  }
+})
+	      \end{lstlisting}
+
+	\item Run the test
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+	      \end{lstlisting}
+
+	      As expected, the test will fail
+
+	      \begin{lstlisting}[language=bash]
+...
+> Task :test
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service FAILED
+  io.micronaut.http.client.exceptions.HttpClientResponseException at DefaultHttpClient.java:2030
+
+1 test completed, 1 failed
+
+> Task :test FAILED
+...
+	      \end{lstlisting}
+
+	\item Impement the Controller
+
+	      File: \texttt{src/main/kotlin/demo/GreetingController.kt}
+
+	      \begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.micronaut.http.MediaType
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Produces
+
+@Controller("/greeting")
+class GreetingController {
+
+  @Get("/")
+  @Produces(MediaType.TEXT_PLAIN)
+  fun greet(): String =
+    "Hello from Micronaut"
+}
+	      \end{lstlisting}
+
+	\item Run the test again
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+	      \end{lstlisting}
+
+	      This time the tests should pass
+
+	      \begin{lstlisting}[language=bash]
+...
+BUILD SUCCESSFUL in 9s
+18 actionable tasks: 18 executed
+	      \end{lstlisting}
+
+	\item Package and run the application.
+
+	      \begin{lstlisting}[language=bash]
+$ ./gradlew shadowJar
+$ java -jar build/libs/demo-all.jar
+	      \end{lstlisting}
+
+	      Access the application
+
+	      \begin{lstlisting}[language=bash]
+$ curl http://localhost:8080/greeting
+Hello from Micronaut
+	      \end{lstlisting}
+
+\end{enumerate}
+
