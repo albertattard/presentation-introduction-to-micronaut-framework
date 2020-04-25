@@ -277,13 +277,13 @@ private var service: ContactsService
     \begin{itemize}
       \item Blueprint Project
       \item Micronaut CLI
-      \item Gradle (Maven)
+      \item Gradle (or Maven)
     \end{itemize}
   \end{frame}
 
 
   \begin{frame}[t,fragile]{Blueprint Project}
-    My preferred way of starting a project is by cloning a blueprint project
+    My preferred way of starting a project is by cloning an existing project
 
     Backend Web Application
     \begin{lstlisting}[language=bash, backgroundcolor = \color{green!5}]
@@ -296,7 +296,7 @@ kotlin-micronaut-blueprint.git
     \begin{lstlisting}[language=bash, backgroundcolor = \color{green!5}]
 $ git clone \
   https://github.com/albertattard/\
-kotlin-open-wc-micronaut-blueprint.git
+kotlin-micronaut-open-wc-blueprint.git
 \end{lstlisting}
 \end{frame}
 
@@ -309,19 +309,42 @@ The CLI is installed separately
 
 \vspace{16pt}
 \begin{lstlisting}[language=bash, backgroundcolor = \color{green!5}]
-$mn create-app \
+$ mn create-app \
   example.micronaut.demo \
   --lang=kotlin
 \end{lstlisting}
 
-The above creates a project using \href{https://gradle.org/}{Gradle} and the \href{https://kotlinlang.org/}{Kotlin} programming language
+The above creates a project using \href{https://gradle.org/}{Gradle} using the \href{https://kotlinlang.org/}{Kotlin} DSL
 \end{frame}
 
 
 \begin{frame}[t]{Gradle or Maven}
 Another option is to use Gradle or Maven to create the project.
 
-https://github.com/gasches/micronaut-archetypes
+\vspace{16pt}
+Maven supports archetypes
+{\footnotesize \href{https://github.com/gasches/micronaut-archetypes}{https://github.com/gasches/micronaut-archetypes}}
+
+Grdale has a plugin that enable archetypes, but there is no archetypes for Micronaut yet
+{\footnotesize \href{https://plugins.gradle.org/plugin/com.orctom.archetype}{https://plugins.gradle.org/plugin/com.orctom.archetype}}
+\end{frame}
+
+
+\begin{frame}[t,fragile]{Micronaut Application}
+\vspace{16pt}
+\begin{lstlisting}[language=java, backgroundcolor = \color{green!5}]
+import io.micronaut.runtime.Micronaut
+
+object Application {
+
+  @JvmStatic
+  fun main(args: Array<String>) {
+    Micronaut.build(*args)
+            .mainClass(Application.javaClass)
+            .start()
+  }
+}
+\end{lstlisting}
 \end{frame}
 
 \end{document}
