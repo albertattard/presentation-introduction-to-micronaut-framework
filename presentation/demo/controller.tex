@@ -106,3 +106,117 @@ Hello from Micronaut
 
 \end{enumerate}
 
+Improve the endpoint such that it can accept a name as a path parameter, \texttt{/greeting/Albert}, that will return a text response: \texttt{Hello Albert, from Micronaut}, as shown next.
+
+\begin{lstlisting}[language=bash]
+$ curl http://localhost:8080/greeting/Albert
+Hello Albert, from Micronaut
+\end{lstlisting}
+
+\begin{enumerate}
+
+\item Update the test
+
+File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
+\begin{lstlisting}[language=Kotlin]
+"should return the greeting message returned by the greeting service" {
+  val name = "Albert"
+  val result = client.toBlocking().retrieve("/$name", String::class.java)
+  result shouldBe "Hello $name, from Micronaut"
+}
+\end{lstlisting}
+
+\item Run the test
+
+\begin{lstlisting}[language=bash]
+./gradlew clean build
+\end{lstlisting}
+
+The test will fail as expected
+
+\begin{lstlisting}[language=bash]
+...
+> Task :test
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service FAILED
+    io.micronaut.http.client.exceptions.HttpClientResponseException at DefaultHttpClient.java:2030
+
+1 test completed, 1 failed
+
+> Task :test FAILED
+
+...
+
+BUILD FAILED in 10s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+No page is found matching the path \texttt{/greeting/Albert}
+
+\begin{lstlisting}[language=bash]
+io.micronaut.http.client.exceptions.HttpClientResponseException: Page Not Found
+	at io.micronaut.http.client.netty.DefaultHttpClient$12.channelRead0(DefaultHttpClient.java:2030)
+	at io.micronaut.http.client.netty.DefaultHttpClient$12.channelRead0(DefaultHttpClient.java:1948)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:99)
+\end{lstlisting}
+
+\item Update the controller's path
+
+File: \texttt{src/main/kotlin/demo/GreetingController.kt}
+\begin{lstlisting}[language=bash]
+@Get("/{name}")
+@Produces(MediaType.TEXT_PLAIN)
+fun greet(): String =
+\end{lstlisting}
+
+Build the project
+
+\begin{lstlisting}[language=bash]
+./gradlew clean build
+\end{lstlisting}
+
+The compiler will fail
+
+\begin{lstlisting}[language=bash]
+...
+> Task :kaptKotlin FAILED
+/Users/albertattard/work/projects/albertattard/demo/build/tmp/kapt3/stubs/main/demo/GreetingController.java:12: error: The route declares a uri variable named [name], but no corresponding method argument is present
+    public final java.lang.String greet() {
+                                  ^Note: Creating bean classes for 2 ...
+
+FAILURE: Build failed with an exception.
+...
+\end{lstlisting}
+
+Micronaut resolves everything at compile time.
+
+\item Add the missing parameter
+
+File: \texttt{src/main/kotlin/demo/GreetingController.kt}
+\begin{lstlisting}[language=Kotlin]
+@Get("/{name}")
+@Produces(MediaType.TEXT_PLAIN)
+fun greet(name: String): String =
+  "Hello $name, from Micronaut"
+\end{lstlisting}
+
+Build the project again
+
+\begin{lstlisting}[language=bash]
+./gradlew clean build
+\end{lstlisting}
+
+This time the project should compule and test should pass
+
+\begin{lstlisting}[language=bash]
+...
+> Task :test
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service PASSED
+
+...
+BUILD SUCCESSFUL in 10s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+\end{enumerate}
