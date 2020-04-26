@@ -77,9 +77,11 @@ $ ls -la build/libs/demo*-all.jar
 \item Run the application
 
 \begin{lstlisting}[language=bash]
-$ java -jar build/libs/demo-0.1-all.jar
+$ java -jar build/libs/demo*-all.jar
 [main] INFO io...Micronaut - Startup completed in 1138ms. Server Running: http://localhost:8080
 \end{lstlisting}
+
+Use the \texttt{build/libs/demo*-all.jar} path to be independent from the version number.  Changing or removing the version will not effect the above command.
 
 Make a request to application
 
@@ -95,6 +97,17 @@ Stop the application (\texttt{[CONTROL] + [C]})
 \end{lstlisting}
 
 \item Create a Docker Image
+
+The Micronaut CLI creates the following docker file.
+
+File: \texttt{Dockerfile}
+
+\begin{lstlisting}[language=Docker]
+FROM adoptopenjdk/openjdk13-openj9:jdk-13.0.2_8_openj9-0.18.0-alpine-slim
+COPY build/libs/demo-*-all.jar demo.jar
+EXPOSE 8080
+CMD ["java", "-Dcom.sun.management.jmxremote", "-Xmx128m", "-XX:+IdleTuningGcOnIdle", "-Xtune:virtualized", "-jar", "demo.jar"]
+\end{lstlisting}
 
 Build Docker Image
 
