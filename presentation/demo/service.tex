@@ -1,6 +1,23 @@
 \section{Service}\label{sec:service}
 
-Coming soon\dots
+\begin{enumerate}
+
+\item Create the \textbf{skeleton} service class
+
+File: \texttt{src/main/kotlin/demo/DefaultGreetingService.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+ class DefaultGreetingService {
+  fun greet(name:String): GreetResponse {
+    TODO("Coming soon...")
+  }
+}
+\end{lstlisting}
+
+The \href{https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-t-o-d-o.html}{\texttt{TODO}} will enable the service to compile yet it will throw \href{https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-not-implemented-error/}{\texttt{kotlin.NotImplementedError}} when invoked.
+
+\item Create the test
 
 File: \texttt{src/test/kotlin/demo/DefaultGreetingServiceTest.kt}
 \begin{lstlisting}[language=Kotlin]
@@ -16,7 +33,34 @@ class DefaultGreetingServiceTest(
   "should return the greeting message for the given name" {
     val service = DefaultGreetingService()
     val greeting = service.greet("Albert")
-    result shouldBe Greeting("Hello Albert")
+    greeting.message shouldBe "Hello Albert"
   }
 })
 \end{lstlisting}
+
+\item Run the tests
+
+\begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+\end{lstlisting}
+
+The test will fail
+
+\begin{lstlisting}[language=bash]
+...
+> Task :test
+
+demo.DefaultGreetingServiceTest > should return the greeting message for the given name FAILED
+    kotlin.NotImplementedError at DefaultGreetingServiceTest.kt:12
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service PASSED
+
+2 tests completed, 1 failed
+
+> Task :test FAILED
+...
+\end{lstlisting}
+
+\end{enumerate}
+
+
