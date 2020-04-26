@@ -1,8 +1,15 @@
 \section{Controller}\label{sec:controller}
 
+Add an endpoint \texttt{/greeting}, that will return a text response: \texttt{Hello from Micronaut}, as shown next.
+
+\begin{lstlisting}[language=bash]
+$ curl http://localhost:8080/greeting
+Hello from Micronaut
+\end{lstlisting}
+
 \begin{enumerate}
 
-\item  Create Test Controller
+\item  Create test controller
 
 File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
 
@@ -20,10 +27,8 @@ class GreetingControllerTest(
   @Client("/greeting") private val client: RxHttpClient
 ) : StringSpec({
   "should return the greeting message returned by the greeting service" {
-    val expected = Greeting("Hello Micronaut World")
-
-    val result = client.toBlocking().retrieve("/", Greeting::class.java)
-    result shouldBe expected
+    val result = client.toBlocking().retrieve("/", String::class.java)
+    result shouldBe "Hello from Micronaut"
   }
 })
 \end{lstlisting}
@@ -49,7 +54,7 @@ demo.GreetingControllerTest > should return the greeting message returned by the
 ...
 \end{lstlisting}
 
-\item Impement the Controller
+\item Impement the controller
 
 File: \texttt{src/main/kotlin/demo/GreetingController.kt}
 
@@ -85,11 +90,11 @@ BUILD SUCCESSFUL in 9s
 18 actionable tasks: 18 executed
 \end{lstlisting}
 
-\item Package and run the application.
+\item Run the application.
 
 \begin{lstlisting}[language=bash]
-$ ./gradlew shadowJar
-$ java -jar build/libs/demo-all.jar
+$ java -jar build/libs/demo*-all.jar
+[main] INFO  io...Micronaut - Startup completed in 662ms. Server Running: http://localhost:8080
 \end{lstlisting}
 
 Access the application
