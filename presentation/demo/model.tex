@@ -1,3 +1,142 @@
 \section{Model}\label{sec:model}
 
-Coming soon\dots
+Return a JSON object with more information for the endpoint \texttt{/greeting}, as shown next.
+
+\begin{lstlisting}[language=bash]
+$ curl http://localhost:8080/greeting
+{"message":"Hello from Micronaut","time":"2020-04-27T20:00:00.000+02:00"}
+\end{lstlisting}
+
+\begin{enumerate}
+
+\item Format date and time as String
+
+By defult time are formatted as timestamps as shown next.
+
+\begin{lstlisting}[language=bash]
+{"message":"Hello from Micronaut","time":1588017600.000000000}
+\end{lstlisting}
+
+Setting \texttt{writeDatesAsTimestamps} to \texttt{false} will print dates and times as string.
+
+File: \texttt{src/main/resources/application.yml}
+\begin{lstlisting}[language=Kotlin]
+jackson:
+  serialization:
+    writeDatesAsTimestamps: false
+\end{lstlisting}
+
+\item Create the \href{https://en.wikipedia.org/wiki/Data_transfer_object}{transfer object} to be returned.
+
+File: \texttt{src/main/kotlin/demo/GreetResponse.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.micronaut.core.annotation.Introspected
+import java.time.ZonedDateTime
+
+@Introspected
+data class GreetResponse(
+  val message: String,
+  val time: ZonedDateTime
+)
+\end{lstlisting}
+
+\href{https://docs.micronaut.io/2.0.0.M2/api/io/micronaut/core/annotation/Introspected.html}{\texttt{@Introspected}} indicates that the type should produce a \href{https://docs.micronaut.io/2.0.0.M2/api/io/micronaut/core/beans/BeanIntrospection.html}{\texttt{BeanIntrospection}} at \textbf{compilation time}.  Jackson will use this to format the \texttt{GreetResponse} to \texttt{JSON} without using reflection.
+
+\item Update the test
+
+File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
+\begin{lstlisting}[language=Kotlin]
+  "should return the greeting message returned by the greeting service" {
+    val result = client.toBlocking().retrieve("/", GreetResponse::class.java)
+    result.message shouldBe "Hello from Micronaut"
+  }
+\end{lstlisting}
+
+Run the tests
+
+\begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+\end{lstlisting}
+
+The tests will fail
+
+\begin{lstlisting}[language=bash]
+  > Task :test FAILED
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service FAILED
+    io.micronaut.http.client.exceptions.HttpClientResponseException at DefaultHttpClient.java:2075
+        Caused by: io.micronaut.http.codec.CodecException at TextPlainCodec.java:95
+
+1 test completed, 1 failed
+\end{lstlisting}
+
+\item Update the controller
+
+\begin{enumerate}
+
+\item Change type media type
+
+\begin{lstlisting}[language=Kotlin]
+@Produces(MediaType.APPLICATION_JSON)
+\end{lstlisting}
+
+\item Change the function return type
+
+\begin{lstlisting}[language=Kotlin]
+fun greet(): GreetResponse =
+\end{lstlisting}
+
+\item Return an instance of \texttt{GreetResponse}
+
+\begin{lstlisting}[language=Kotlin]
+GreetResponse(
+  message = "Hello from Micronaut",
+  time = ZonedDateTime.now()
+)
+\end{lstlisting}
+
+\end{enumerate}
+
+Full example
+
+File: \texttt{src/main/kotlin/demo/GreetingController.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.micronaut.http.MediaType
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Produces
+import java.time.ZonedDateTime
+
+@Controller("/greeting")
+class GreetingController {
+  @Get("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  fun greet(): GreetResponse =
+    GreetResponse(
+      message = "Hello from Micronaut",
+      time = ZonedDateTime.now()
+    )
+}
+\end{lstlisting}
+
+\item Build the application
+
+\begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+\end{lstlisting}
+
+The tests should now pass
+
+\begin{lstlisting}[language=bash]
+...
+BUILD SUCCESSFUL in 13s
+18 actionable tasks: 18 executed\end{lstlisting}
+
+\end{enumerate}
+
+
+

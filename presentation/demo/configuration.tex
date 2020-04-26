@@ -87,23 +87,28 @@ dependencies {
   val kotlintest = "1.1.2"
   val kotlintestRunner = "3.3.2"
 
-  implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
-
+  /* Kotlin */
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
   implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+
+  /* Micronaut */
+  implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
   implementation("io.micronaut:micronaut-runtime")
   implementation("io.micronaut:micronaut-http-server-netty")
   implementation("io.micronaut:micronaut-http-client")
-
   runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson")
+
+  /* Logging */
   runtimeOnly("ch.qos.logback:logback-classic:$logback")
 
+  /* Micronaut */
   kapt(platform("io.micronaut:micronaut-bom:$micronautVersion"))
   kapt("io.micronaut:micronaut-inject-java")
   kapt("io.micronaut:micronaut-validation")
   kaptTest(platform("io.micronaut:micronaut-bom:$micronautVersion"))
   kaptTest("io.micronaut:micronaut-inject-java")
 
+  /* Testing */
   testImplementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
   testImplementation("io.micronaut.test:micronaut-test-kotlintest:$kotlintest")
   testImplementation("io.mockk:mockk:$mockk")
