@@ -1,5 +1,7 @@
 \section{Service}\label{sec:service}
 
+Create a service that will be responsible from creating the response that will be returned by the controller.
+
 \begin{enumerate}
 
 \item Create the \textbf{skeleton} service class
@@ -59,6 +61,126 @@ demo.GreetingControllerTest > should return the greeting message returned by the
 
 > Task :test FAILED
 ...
+\end{lstlisting}
+
+\item Implement the service
+
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import java.time.ZonedDateTime
+
+class DefaultGreetingService {
+  fun greet(name: String): GreetResponse =
+    GreetResponse(
+      message = "Hello $name",
+      time = ZonedDateTime.now()
+    )
+}
+\end{lstlisting}
+
+\item Run the tests again
+
+\begin{lstlisting}[language=bash]
+$ ./gradlew clean build
+\end{lstlisting}
+
+This time, both tests should pass.
+
+\begin{lstlisting}[language=bash]
+...
+> Task :test
+
+demo.DefaultGreetingServiceTest > should return the greeting message for the given name PASSED
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service PASSED
+
+...
+
+BUILD SUCCESSFUL in 10s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+\item Create an interface, named \texttt{GreetingService}, and make the \texttt{DefaultGreetingService} implement it.  This interface will be used later on to mock the service while testing the controller.
+
+File: \texttt{src/main/kotlin/demo/GreetingService.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+interface GreetingService {
+  fun greet(name: String): GreetResponse;
+}
+\end{lstlisting}
+
+Implement the interface.
+
+
+File: \texttt{src/main/kotlin/demo/DefaultGreetingService.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import java.time.ZonedDateTime
+
+class DefaultGreetingService: GreetingService {
+  override fun greet(name: String): GreetResponse =
+    GreetResponse(
+      message = "Hello $name",
+      time = ZonedDateTime.now()
+    )
+}
+\end{lstlisting}
+
+Run the tests
+
+\begin{lstlisting}[language=bash]
+./gradlew clean build
+\end{lstlisting}
+
+The tests should all pass
+
+\begin{lstlisting}[language=bash]
+...
+  > Task :test
+
+demo.DefaultGreetingServiceTest > should return the greeting message for the given name PASSED
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service PASSED
+
+...
+BUILD SUCCESSFUL in 10s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.annotation.Client
+import io.micronaut.test.annotation.MicronautTest
+
+@MicronautTest
+class GreetingControllerTest(
+  private val service: GreetingService,
+  @Client("/greeting") private val client: RxHttpClient
+) : StringSpec({
+  "should return the greeting message returned by the greeting service" {
+    val mock = getMock(service)
+
+    val greeting = GreetingResponse("Hello $name")
+    every { mock.greet(name) } returns greeting
+
+    val result = client.toBlocking().retrieve("/$name", GreetResponse::class.java)
+    result.message shouldBe "Hello from Micronaut"
+  }
+}) {
+  @MockBean(GreetingService::class)
+  fun greetingService(): GreetingService =
+    mockk()
+}
 \end{lstlisting}
 
 \end{enumerate}
