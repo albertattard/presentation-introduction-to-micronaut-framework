@@ -154,7 +154,11 @@ rootProject.name="demo"
 
 \end{enumerate}
 
-Build the project to ensure that all is in order and the project still builds and runs.
+Ensure that all is in order and the project still builds and runs.
+
+\begin{enumerate}
+
+\item Build the project.
 
 \begin{lstlisting}[language=bash]
 $ ./gradlew clean build
@@ -166,15 +170,34 @@ BUILD SUCCESSFUL in 29s
 The version number is removed from the \texttt{build.gradle.kts} file, therefore the JAR file will not have the version in its path.
 
 \begin{lstlisting}[language=bash]
-ls -la build/libs/demo-*-all.jar
+$ ls -la build/libs/demo*-all.jar
 -rw-r--r-- build/libs/demo-all.jar
 \end{lstlisting}
 
+\item Run the application
 
 \begin{lstlisting}[language=bash]
-$ ./gradlew clean build
-$ java -jar build/libs/demo-0.1-all.jar
+$ java -jar build/libs/demo*-all.jar
+[main] INFO  io...Micronaut - Startup completed in 847ms. Server Running: http://localhost:8080
 \end{lstlisting}
+
+\item Build the docker image
+
+\begin{lstlisting}[language=bash]
+$ docker build . -t micronaut-demo:local
+...
+Successfully built 762afaf6b633
+Successfully tagged micronaut-demo:local
+\end{lstlisting}
+
+\item Run the docker image
+
+\begin{lstlisting}[language=bash]
+$ docker run -p 9090:8080 -it micronaut-demo:local
+[main] INFO  io...Micronaut - Startup completed in 1323ms. Server Running: http://93d985628e25:8080
+\end{lstlisting}
+
+\end{enumerate}
 
 \item Update Dependencies Versions
 
@@ -190,7 +213,7 @@ File: \texttt{build.gradle.kts}
 
 \begin{lstlisting}[language=Kotlin]
 plugins {
-  id("com.github.ben-manes.versions") version "0.28.0"
+  id("com.github.ben-manes.versions").version("0.28.0")
 }
 \end{lstlisting}
 
@@ -223,8 +246,9 @@ File: \texttt{build.gradle.kts}
 \begin{itemize}
 \item Kotlin: \texttt{1.3.72}
 \item Micronaut: \texttt{2.0.0.M2}
-\item Jackson: \texttt{2.11.0.rc1}
+\item Jackson: \texttt{2.11.0}
 \item Logback: \texttt{1.3.0-alpha5}
+\item Mockk: \texttt{1.10.0}
 \item Kotlintest: \texttt{1.1.5}
 \item Kotlintest Runner: \texttt{3.4.0}
 
@@ -238,20 +262,19 @@ demo.GreetingControllerTest > initializationError FAILED
 Reverted to the latest working version.
 \end{itemize}
 
+Note that newer versions may be available.
+
 \item Build the application to confirm that all is in order.
 
 \begin{lstlisting}[language=bash]
 $ ./gradlew clean build
 \end{lstlisting}
 
-\item Package and run the application
+\item Run the application
 
 \begin{lstlisting}[language=bash]
-$ ./gradlew shadowJar
-$ java -jar build/libs/demo-all.jar
+$ java -jar build/libs/demo*-all.jar
 \end{lstlisting}
-
-Note that the JAR file path does not have the version as this was removed form the \texttt{build.gradle.kts} file.
 
 An exception may be thrown due to a missing class
 
@@ -289,11 +312,20 @@ dependencies {
 
 \end{itemize}
 
-Repackage and rerun the application.
+Build the application.
 
 \begin{lstlisting}[language=bash]
-$ ./gradlew shadowJar
-$ java -jar build/libs/demo-all.jar
+$ ./gradlew clean build
+...
+BUILD SUCCESSFUL in 8s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+Rerun the application.
+
+\begin{lstlisting}[language=bash]
+$ java -jar build/libs/demo*-all.jar
+[main] INFO  io...Micronaut - Startup completed in 654ms. Server Running: http://localhost:8080
 \end{lstlisting}
 
 \end{enumerate}

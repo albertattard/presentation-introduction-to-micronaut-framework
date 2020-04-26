@@ -109,6 +109,12 @@ EXPOSE 8080
 CMD ["java", "-Dcom.sun.management.jmxremote", "-Xmx128m", "-XX:+IdleTuningGcOnIdle", "-Xtune:virtualized", "-jar", "demo.jar"]
 \end{lstlisting}
 
+Update the copy path, make it version independent.
+
+\begin{lstlisting}[language=Docker]
+COPY build/libs/demo*-all.jar demo.jar
+\end{lstlisting}
+
 Build Docker Image
 
 \begin{lstlisting}[language=bash]
