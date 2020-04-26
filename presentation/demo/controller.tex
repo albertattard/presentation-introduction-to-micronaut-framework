@@ -219,4 +219,18 @@ BUILD SUCCESSFUL in 10s
 18 actionable tasks: 18 executed
 \end{lstlisting}
 
+\item Run the application.
+
+\begin{lstlisting}[language=bash]
+$ java -jar build/libs/demo*-all.jar
+[main] INFO  io...Micronaut - Startup completed in 662ms. Server Running: http://localhost:8080
+\end{lstlisting}
+
+Access the application
+
+\begin{lstlisting}[language=bash]
+$ curl http://localhost:8080/greeting/Albert
+Hello Albert, from Micronaut
+\end{lstlisting}
+
 \end{enumerate}

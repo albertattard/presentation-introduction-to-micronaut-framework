@@ -3,8 +3,8 @@
 Return a JSON object with more information for the endpoint \texttt{/greeting}, as shown next.
 
 \begin{lstlisting}[language=bash]
-$ curl http://localhost:8080/greeting
-{"message":"Hello from Micronaut","time":"2020-04-27T20:00:00.000+02:00"}
+$ curl http://localhost:8080/greeting/Albert
+{"message":"Hello Albert, from Micronaut","time":"2020-04-27T20:00:00.000+02:00"}
 \end{lstlisting}
 
 \begin{enumerate}
@@ -14,7 +14,7 @@ $ curl http://localhost:8080/greeting
 By defult time are formatted as timestamps as shown next.
 
 \begin{lstlisting}[language=bash]
-{"message":"Hello from Micronaut","time":1588017600.000000000}
+{"message":"Hello Albert, from Micronaut","time":1588017600.000000000}
 \end{lstlisting}
 
 Setting \texttt{writeDatesAsTimestamps} to \texttt{false} will print dates and times as string.
@@ -48,10 +48,11 @@ data class GreetResponse(
 
 File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
 \begin{lstlisting}[language=Kotlin]
-  "should return the greeting message returned by the greeting service" {
-    val result = client.toBlocking().retrieve("/", GreetResponse::class.java)
-    result.message shouldBe "Hello from Micronaut"
-  }
+"should return the greeting message returned by the greeting service" {
+  val name = "Albert"
+  val result = client.toBlocking().retrieve("/$name$", GreetResponse::class.java)
+  result.message shouldBe "Hello $name$, from Micronaut"
+}
 \end{lstlisting}
 
 Run the tests
@@ -63,13 +64,22 @@ $ ./gradlew clean build
 The tests will fail
 
 \begin{lstlisting}[language=bash]
-  > Task :test FAILED
+...
+> Task :test
 
 demo.GreetingControllerTest > should return the greeting message returned by the greeting service FAILED
     io.micronaut.http.client.exceptions.HttpClientResponseException at DefaultHttpClient.java:2075
         Caused by: io.micronaut.http.codec.CodecException at TextPlainCodec.java:95
 
 1 test completed, 1 failed
+
+> Task :test FAILED
+
+FAILURE: Build failed with an exception.
+
+...
+BUILD FAILED in 11s
+18 actionable tasks: 18 executed
 \end{lstlisting}
 
 \item Update the controller
@@ -85,14 +95,14 @@ demo.GreetingControllerTest > should return the greeting message returned by the
 \item Change the function return type
 
 \begin{lstlisting}[language=Kotlin]
-fun greet(): GreetResponse =
+fun greet(name: String): GreetResponse =
 \end{lstlisting}
 
 \item Return an instance of \texttt{GreetResponse}
 
 \begin{lstlisting}[language=Kotlin]
 GreetResponse(
-  message = "Hello from Micronaut",
+  message = "Hello $name, from Micronaut",
   time = ZonedDateTime.now()
 )
 \end{lstlisting}
@@ -113,11 +123,11 @@ import java.time.ZonedDateTime
 
 @Controller("/greeting")
 class GreetingController {
-  @Get("/")
+  @Get("/{name}")
   @Produces(MediaType.APPLICATION_JSON)
-  fun greet(): GreetResponse =
+  fun greet(name: String): GreetResponse =
     GreetResponse(
-      message = "Hello from Micronaut",
+      message = "Hello $name, from Micronaut",
       time = ZonedDateTime.now()
     )
 }
