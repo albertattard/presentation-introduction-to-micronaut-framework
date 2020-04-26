@@ -2,11 +2,11 @@
 
 \begin{enumerate}
 
-	\item  Create Test Controller
+\item  Create Test Controller
 
-	      File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
+File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
 
-	      \begin{lstlisting}[language=Kotlin]
+\begin{lstlisting}[language=Kotlin]
 package demo
 
 import io.kotlintest.shouldBe
@@ -26,17 +26,17 @@ class GreetingControllerTest(
     result shouldBe expected
   }
 })
-	      \end{lstlisting}
+\end{lstlisting}
 
-	\item Run the test
+\item Run the test
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ ./gradlew clean build
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      As expected, the test will fail
+As expected, the test will fail
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 ...
 > Task :test
 
@@ -47,13 +47,13 @@ demo.GreetingControllerTest > should return the greeting message returned by the
 
 > Task :test FAILED
 ...
-	      \end{lstlisting}
+\end{lstlisting}
 
-	\item Impement the Controller
+\item Impement the Controller
 
-	      File: \texttt{src/main/kotlin/demo/GreetingController.kt}
+File: \texttt{src/main/kotlin/demo/GreetingController.kt}
 
-	      \begin{lstlisting}[language=Kotlin]
+\begin{lstlisting}[language=Kotlin]
 package demo
 
 import io.micronaut.http.MediaType
@@ -69,35 +69,35 @@ class GreetingController {
   fun greet(): String =
     "Hello from Micronaut"
 }
-	      \end{lstlisting}
+\end{lstlisting}
 
-	\item Run the test again
+\item Run the test again
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ ./gradlew clean build
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      This time the tests should pass
+This time the tests should pass
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 ...
 BUILD SUCCESSFUL in 9s
 18 actionable tasks: 18 executed
-	      \end{lstlisting}
+\end{lstlisting}
 
-	\item Package and run the application.
+\item Package and run the application.
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ ./gradlew shadowJar
 $ java -jar build/libs/demo-all.jar
-	      \end{lstlisting}
+\end{lstlisting}
 
-	      Access the application
+Access the application
 
-	      \begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash]
 $ curl http://localhost:8080/greeting
 Hello from Micronaut
-	      \end{lstlisting}
+\end{lstlisting}
 
 \end{enumerate}
 

@@ -1,3 +1,22 @@
 \section{Service}\label{sec:service}
 
 Coming soon\dots
+
+File: \texttt{src/test/kotlin/demo/DefaultGreetingServiceTest.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.micronaut.test.annotation.MicronautTest
+
+@MicronautTest
+class DefaultGreetingServiceTest(
+) : StringSpec({
+  "should return the greeting message for the given name" {
+    val service = DefaultGreetingService()
+    val greeting = service.greet("Albert")
+    result shouldBe Greeting("Hello Albert")
+  }
+})
+\end{lstlisting}

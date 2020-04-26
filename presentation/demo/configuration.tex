@@ -8,9 +8,55 @@
 $ idea .
 \end{lstlisting}
 
+\item The project comes with two classes
+
+\begin{enumerate}
+\item The \texttt{Application} class
+
+
+File: \texttt{src/main/kotlin/demo/Application.kt}
+
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.micronaut.runtime.Micronaut
+
+object Application {
+
+  @JvmStatic
+  fun main(args: Array<String>) {
+    Micronaut.build()
+             .packages("demo")
+             .mainClass(Application.javaClass)
+             .start()
+  }
+}
+\end{lstlisting}
+
+\item The \texttt{ProjectConfig} class used by KotlinTest
+
+File: \texttt{src/test/kotlin/io/kotlintest/provided/ProjectConfig.kt}
+
+\begin{lstlisting}[language=Kotlin]
+package io.kotlintest.provided
+
+import io.kotlintest.AbstractProjectConfig
+import io.micronaut.test.extensions.kotlintest.MicronautKotlinTestExtension
+
+object ProjectConfig : AbstractProjectConfig() {
+  override fun listeners() = listOf(MicronautKotlinTestExtension)
+  override fun extensions() = listOf(MicronautKotlinTestExtension)
+}
+\end{lstlisting}
+
+For more information please refer to \url{https://micronaut-projects.github.io/micronaut-test/latest/guide/\#kotlintest}.
+
+\end{enumerate}
+
 \item (\textbf{Optional}) Take advantage of the Kotlin DSL
 
 Convert the \texttt{build.gradle} file into Kotlin DSL \texttt{build.gradle.kts}
+
 \begin{lstlisting}[language=Kotlin]
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile

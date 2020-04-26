@@ -21,7 +21,7 @@ Upgrade Micronaut CLI
 $ brew upgrade micronaut
 \end{lstlisting}
 
-\item Create demo application using Micronaut CLI
+\item Create an application using Micronaut CLI
 
 \begin{lstlisting}[language=bash]
 $ mn create-app demo --lang=kotlin
@@ -29,7 +29,7 @@ $ mn create-app demo --lang=kotlin
 | Application created at /.../demo
 \end{lstlisting}
 
-The following commands are executed from within the \texttt{demo} directory
+The following commands are executed from within the \texttt{demo} directory.  All paths are also relative to the \texttt{demo} directory.
 
 Go into the \texttt{demo} directory
 
@@ -59,11 +59,26 @@ drwxr-xr-x src
 $ ./gradlew clean build
 \end{lstlisting}
 
+This should build succesfully
+
+\begin{lstlisting}[language=bash]
+...
+BUILD SUCCESSFUL in 20s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+This will produce an executable JAR file: \texttt{build/libs/demo-0.1-all.jar}.
+
+\begin{lstlisting}[language=bash]
+$ ls -la build/libs/demo*-all.jar
+-rw-r--r-- build/libs/demo-0.1-all.jar
+\end{lstlisting}
+
 \item Run the application
 
 \begin{lstlisting}[language=bash]
 $ java -jar build/libs/demo-0.1-all.jar
-14:20:51.355 [main] INFO io...Micronaut - Startup completed in 1138ms. Server Running: http://localhost:8080
+[main] INFO io...Micronaut - Startup completed in 1138ms. Server Running: http://localhost:8080
 \end{lstlisting}
 
 Make a request to application
@@ -76,7 +91,44 @@ $ curl http://localhost:8080
 Stop the application (\texttt{[CONTROL] + [C]})
 
 \begin{lstlisting}[language=bash]
-15:02:49.278 [Thread-2] INFO io...Micronaut - Embedded Application shutting down
+[Thread-2] INFO io...Micronaut - Embedded Application shutting down
 \end{lstlisting}
+
+\item Create a Docker Image
+
+Build Docker Image
+
+\begin{lstlisting}[language=bash]
+$ docker build . -t micronaut-demo:local
+\end{lstlisting}
+
+Wait for the image to build
+
+\begin{lstlisting}[language=bash]
+...
+Successfully built 6922b09edd27
+Successfully tagged micronaut-demo:local
+\end{lstlisting}
+
+Run the local docker image
+
+\begin{lstlisting}[language=bash]
+$ docker run -p 9090:8080 -it micronaut-demo:local
+[main] INFO  io...Micronaut - Startup completed in 1336ms. Server Running: http://b09cb58fb87a:8080
+\end{lstlisting}
+
+Docker is mapping the application to port \texttt{9090}.  Access the application running on docker.
+
+\begin{lstlisting}[language=bash]
+$curl http://localhost:9090
+{"message":"Page Not Found","_links":{"self":{"href":"/","templated":false}}}
+\end{lstlisting}
+
+Stop the application (\texttt{[CONTROL] + [C]}) running on docker
+
+\begin{lstlisting}[language=bash]
+[Thread-2] INFO io...Micronaut - Embedded Application shutting down
+\end{lstlisting}
+
 
 \end{enumerate}
