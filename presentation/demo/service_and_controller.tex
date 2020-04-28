@@ -1,0 +1,273 @@
+\section{Use the Service from the Controller}\label{sec:service_and_controller}
+
+
+\begin{enumerate}
+
+\item Create an interface, named \texttt{GreetingService}, and make the \texttt{DefaultGreetingService} implement it.  This interface will be used later on to mock the service while testing the controller.
+
+File: \texttt{src/main/kotlin/demo/GreetingService.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+interface GreetingService {
+  fun greet(name: String): GreetResponse;
+}
+\end{lstlisting}
+
+Implement the interface.
+
+File: \texttt{src/main/kotlin/demo/DefaultGreetingService.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import java.time.ZonedDateTime
+
+class DefaultGreetingService: GreetingService {
+  override fun greet(name: String): GreetResponse =
+    GreetResponse(
+      message = "Hello $name, from Micronaut",
+      time = ZonedDateTime.now()
+    )
+}
+\end{lstlisting}
+
+Run the tests
+
+\begin{lstlisting}[language=bash]
+./gradlew clean build
+\end{lstlisting}
+
+The tests should all pass
+
+\begin{lstlisting}[language=bash]
+...
+  > Task :test
+
+demo.DefaultGreetingServiceTest > should return the greeting message for the given name PASSED
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service PASSED
+
+...
+BUILD SUCCESSFUL in 10s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+\item Custom Matcher
+
+The \texttt{shouldBe} assersion will not work with dates with different time zones.  The following will fail due to different time zones.
+
+\begin{lstlisting}[language=Kotlin]
+val a = ZonedDateTime.now(ZoneId.of("Europe/Berlin"))
+val b = a.withZoneSameInstant(ZoneOffset.UTC)
+a shouldBe b
+\end{lstlisting}
+
+The dates can be compared as follow
+
+\begin{lstlisting}[language=Kotlin]
+a.isEqual(b) shouldBe true
+\end{lstlisting}
+
+The above will work, but will produce an unuseful message.
+
+Create a custom
+
+File: \texttt{src/test/kotlin/demo/CustomMatcher.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.kotlintest.Matcher
+import io.kotlintest.MatcherResult
+import io.kotlintest.should
+import io.kotlintest.shouldNot
+import java.time.ZonedDateTime
+
+infix fun ZonedDateTime.shouldNotHaveSameInstantAs(other: ZonedDateTime) =
+    this shouldNot haveSameInstantAs(other)
+
+infix fun ZonedDateTime.shouldHaveSameInstantAs(other: ZonedDateTime) =
+    this should haveSameInstantAs(other)
+
+fun haveSameInstantAs(other: ZonedDateTime) = object : Matcher<ZonedDateTime> {
+  override fun test(value: ZonedDateTime): MatcherResult =
+    MatcherResult(
+      passed = value.isEqual(other),
+      failureMessage = "$value should have same instance as $other",
+      negatedFailureMessage = "$value should not have same instance as $other"
+    )
+}
+\end{lstlisting}
+
+
+\item Mock the service
+
+File: \texttt{src/test/kotlin/demo/GreetingControllerTest.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.annotation.Client
+import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.annotation.MockBean
+import io.micronaut.test.extensions.kotlintest.MicronautKotlinTestExtension.getMock
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import java.time.ZonedDateTime
+
+@MicronautTest
+class GreetingControllerTest(
+  private val service: GreetingService,
+  @Client("/greeting") private val client: RxHttpClient
+) : StringSpec({
+  "should return the greeting message returned by the greeting service" {
+    val mock = getMock(service)
+
+    val name = "Albert"
+    val greeting = GreetResponse(
+      message = "Hello $name, from Micronaut",
+      time = ZonedDateTime.now()
+    )
+    every { mock.greet(name) } returns greeting
+
+    val result = client.toBlocking().retrieve("/$name", GreetResponse::class.java)
+    result.message shouldBe greeting.message
+    result.time shouldHaveSameInstantAs greeting.time
+
+    verify(exactly = 1) { mock.greet(name) }
+
+    /* Invoked by Micronaut */
+    verify(exactly = 2) { mock.hashCode() }
+    confirmVerified(mock)
+  }
+}) {
+  @MockBean(GreetingService::class)
+  fun greetingService(): GreetingService =
+    mockk()
+}
+\end{lstlisting}
+
+\item Run the tests
+
+\begin{lstlisting}[language=bash]
+./gradlew clean build
+\end{lstlisting}
+
+The \texttt{GreetingControllerTest} test will fail as expected
+
+\begin{lstlisting}[language=bash]
+...
+> Task :test
+
+demo.DefaultGreetingServiceTest > should return the greeting message for the given name PASSED
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service FAILED
+    org.opentest4j.AssertionFailedError at GreetingControllerTest.kt:34
+
+2 tests completed, 1 failed
+
+> Task :test FAILED
+
+FAILURE: Build failed with an exception.
+
+...
+
+BUILD FAILED in 17s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+The test will fail as the date have a different instant value.
+
+\begin{lstlisting}[language=bash]
+java.lang.AssertionError: 2020-04-28T05:56:39.093052Z[UTC] should have same instance as 2020-04-28T07:56:38.680259+02:00[Europe/Berlin]
+  at demo.CustomMatcherKt.shouldHaveSameInstantAs(CustomMatcher.kt:13)
+  at demo.GreetingControllerTest$1$1.invokeSuspend(GreetingControllerTest.kt:33)
+\end{lstlisting}
+
+The controller is not making use of the service yet and it is creating the instance of \texttt{GreetResponse}.
+
+\item Use the service in the controller
+
+File: \texttt{src/main/kotlin/demo/GreetingController.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import io.micronaut.http.MediaType
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Produces
+
+@Controller("/greeting")
+class GreetingController(
+  private val service: GreetingService
+) {
+  @Get("/{name}")
+  @Produces(MediaType.APPLICATION_JSON)
+  fun greet(name: String): GreetResponse =
+    service.greet(name)
+}
+\end{lstlisting}
+
+\item Run the tests again
+
+\begin{lstlisting}[language=bash]
+./gradlew clean build
+\end{lstlisting}
+
+All tests should pass.
+
+\begin{lstlisting}[language=bash]
+...
+> Task :test
+
+demo.DefaultGreetingServiceTest > should return the greeting message for the given name PASSED
+
+demo.GreetingControllerTest > should return the greeting message returned by the greeting service PASSED
+
+...
+
+BUILD SUCCESSFUL in 12s
+18 actionable tasks: 18 executed
+\end{lstlisting}
+
+\item Run the application
+
+\begin{lstlisting}[language=bash]
+$ java -jar build/libs/demo*-all.jar
+19:09:29.709 [main] INFO  io.micronaut.runtime.Micronaut - Startup completed in 924ms. Server Running: http://localhost:8080
+\end{lstlisting}
+
+Try the service
+
+\begin{lstlisting}[language=bash]
+$ curl http://localhost:8080/greeting/Albert
+{"message":"Internal Server Error: Failed to inject value for parameter [service] of class: demo.GreetingController\n\nMessage: No bean of type [demo.GreetingService] exists. Make sure the bean is not disabled by bean requirements (enable trace logging for 'io.micronaut.context.condition' to check) and if the bean is enabled then ensure the class is declared a bean and annotation processing is enabled (for Java and Kotlin the 'micronaut-inject-java' dependency should be configured as an annotation processor).\nPath Taken: new GreetingController([GreetingService service])"}
+\end{lstlisting}
+
+Micronaut is not able to locat an implementation for the \texttt{GreetingService} service.
+
+\item Define the implementation for the \texttt{GreetingService} service.
+
+File: \texttt{src/main/kotlin/demo/DefaultGreetingService.kt}
+\begin{lstlisting}[language=Kotlin]
+package demo
+
+import java.time.ZonedDateTime
+import javax.inject.Singleton
+
+@Singleton
+class DefaultGreetingService : GreetingService {
+  override fun greet(name: String): GreetResponse =
+    GreetResponse(
+      message = "Hello $name, from Micronaut",
+      time = ZonedDateTime.now()
+    )
+}
+\end{lstlisting}
+
+\end{enumerate}
+
+
